@@ -14,13 +14,6 @@
 #include "entity.c"
 #include "math.c"
 
-// Game-boy screen size :)
-#define WINDOW_WIDTH 160
-#define WINDOW_HEIGHT 144
-
-// 30 FPS
-#define DELTA 0.03333
-
 void error() {
   fprintf(stderr, "SDL_Init -> %s\n", SDL_GetError());
   exit(EXIT_FAILURE);
@@ -64,6 +57,7 @@ int main() {
   // Keep size and scale
   SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
   SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
+/*  SDL_SetRelativeMouseMode(SDL_TRUE);*/
 
   SDL_Rect background;
 
@@ -72,36 +66,33 @@ int main() {
   background.w = WINDOW_WIDTH;
   background.h = WINDOW_HEIGHT;
 
-  Entity player = createEntity(renderer, "./sprites/player.bmp", 2, 24, 16, 16);
-  setAnimation(&player.animation, 1, 4);
-
-  float player_fishing_rod_height = 0;
-
-  int mx = 0, my = 0;
+  Entity player = createEntity(renderer, "./sprites/player.bmp", 0, 24, 16, 16);
+ 
+  SDL_Point player_fishing_rod_start;
+  player_fishing_rod_start.x = 14;
+  player_fishing_rod_start.y = 30;
 
   // Game-Loop
   while (1) { 
-    SDL_Event event;
-
     framerate(1);
+    
+    SDL_Event event;
+    const Uint8* state = SDL_GetKeyboardState(NULL);
 
-    while (SDL_PollEvent(&event)) {
+    while(SDL_PollEvent(&event)) {
       switch (event.type) {
         case SDL_QUIT: goto game_free;
-        case SDL_KEYDOWN: 
-          if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free;
-          if (event.key.keysym.sym == SDLK_RIGHT) player.position.x = CLAMP(player.position.x + 1, 0, 143);
-          if (event.key.keysym.sym == SDLK_LEFT) player.position.x = CLAMP(player.position.x - 1, 0, 143);
-          if (event.key.keysym.sym == SDLK_DOWN) player_fishing_rod_height += 2;
-          if (event.key.keysym.sym == SDLK_UP) player_fishing_rod_height -= 2;
-
-          
-          if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT) player_fishing_rod_height = 0;
-        break;
+        case SDL_KEYDOWN: if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; break;        
       }
     }
 
-    updateAnimation(&player.animation, DELTA * 4);
+    if (state[SDL_SCANCODE_LEFT]) { player.velocity.x -= 1; }
+    if (state[SDL_SCANCODE_RIGHT]) { player.velocity.x += 1; }
+
+    if (player.velocity.x == 0) setAnimation(&player.animation, 1, 4, 4);
+    else setAnimation(&player.animation, 2, 2, 4);
+
+    updateEntity(&player);
 
     SDL_RenderClear(renderer);
     
@@ -109,9 +100,6 @@ int main() {
     SDL_RenderFillRect(renderer, &background);
 
     drawEntity(renderer, &player);
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-/*    SDL_RenderDrawLine(renderer, player_position.x + 15, player_position.y + 6, player_position.x + 15, player_position.y + 6 + player_fishing_rod_height);*/
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderPresent(renderer);
@@ -127,8 +115,6 @@ int main() {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-
-
 
   return 1;
 }
