@@ -4,6 +4,7 @@
 #include <SDL_render.h>
 
 #include "animation.c"
+#include "utils.c"
 
 typedef struct Entity {
   SDL_Rect position;
@@ -12,9 +13,7 @@ typedef struct Entity {
   SDL_Texture * texture;
 } Entity;
 
-Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {
-  SDL_Surface * surface = SDL_LoadBMP(src);
-  
+Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {  
   Entity entity;
 
   entity.position.x = x;
@@ -25,10 +24,10 @@ Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, in
   entity.velocity.x = 0;
   entity.velocity.y = 0;
 
-  entity.texture = SDL_CreateTextureFromSurface(renderer, surface);
+  entity.texture = createTexture(renderer, src);
   entity.animation = createAnimation(entity.texture, w, h);
 
-  SDL_FreeSurface(surface);
+  setAnimation(&entity.animation, 1, 1, 0);
 
   return entity;
 }
@@ -41,6 +40,9 @@ Entity createEntityTexture(SDL_Texture * texture, int x, int y, int w, int h) {
   entity.position.w = w;
   entity.position.h = h;
 
+  entity.velocity.x = 0;
+  entity.velocity.y = 0;
+  
   entity.texture = texture;
   entity.animation = createAnimation(entity.texture, w, h);
   

@@ -12,7 +12,7 @@
 #define MAX(v, max) (v > max ? max : v)
 #define CLAMP(v, min, max) (MIN(min, MAX(v, max)))
 #define ICLAMP(v, min, max) (v > max ? min : v < min ? max : v)
-#define MIDPOINT(s, e) ((s + e) / 2)
+#define MID(s, e) ((s + e) / 2)
 
 SDL_Point quadraticBezierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, float w) {
   float x0 = LERP(p1.x, p2.x, w);
@@ -31,5 +31,5 @@ SDL_Point cubicBenzierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, SDL_Point 
 }
 
 SDL_Point lineMidpoint(SDL_Point s, SDL_Point e) {
-  return (SDL_Point) { MIDPOINT(s.x, e.x), MIDPOINT(s.y, e.y) };
+  return (SDL_Point) { MID(s.x, e.x), MID(s.y, e.y) };
 }
