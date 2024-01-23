@@ -3,7 +3,7 @@
 #include <SDL_render.h>
 #include <SDL_surface.h>
 
-enum player_state { PLAYER_NORMAL, PLAYER_PRE_FISHING, PLAYER_FISHING };
+enum player_state { PLAYER_NORMAL, PLAYER_PRE_FISHING, PLAYER_FISHING, PLAYER_FISHING_BACK };
 
 SDL_Texture * createTexture(SDL_Renderer * renderer, char * src) {
   SDL_Surface * surface = SDL_LoadBMP(src);

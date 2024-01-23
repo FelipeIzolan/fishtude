@@ -2,6 +2,7 @@
 
 #include <SDL_surface.h>
 #include <SDL_render.h>
+#include <SDL_rect.h>
 
 #include "animation.c"
 #include "utils.c"
@@ -64,6 +65,7 @@ void drawEntity(SDL_Renderer * renderer, Entity * entity) {
 
 void destroyEntity(Entity * entity) {
   SDL_DestroyTexture(entity->texture);
+  entity->texture = NULL;
 }
 
 void destroyEntityTexture(Entity * entity) {
