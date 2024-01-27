@@ -43,6 +43,11 @@ void setAnimation(Animation * animation, int column, int max_row, float multipli
   animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;
 }
 
+void setFrame(Animation * animation, int column, int row) {
+  animation->frame.x = row * animation->frame.w;
+  animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;
+}
+
 void updateAnimation(Animation * animation) {
   animation->time = ICLAMP(animation->time + DELTA * animation->multiplier, 0, animation->max_row);
   animation->frame.x = floorf(animation->time) * animation->frame.w;

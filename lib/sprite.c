@@ -6,11 +6,12 @@
 #include "utils.c"
 
 typedef struct Sprite {
+  SDL_Rect frame;
   SDL_Rect position;
   SDL_Texture * texture;
 } Sprite;
 
-Sprite createSprite(SDL_Renderer * renderer, char * src, int x, int y) {
+Sprite createSprite(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {
   Sprite sprite;
   int tw, th;
 
@@ -19,8 +20,23 @@ Sprite createSprite(SDL_Renderer * renderer, char * src, int x, int y) {
 
   sprite.position.x = x;
   sprite.position.y = y;
-  sprite.position.w = tw;
-  sprite.position.h = th;
+  sprite.position.h = h;
+
+  if (w == 0) { 
+    sprite.frame.w = tw;
+    sprite.position.w = tw;
+  } else {
+    sprite.frame.w = w;
+    sprite.position.w = w;
+  }
+  
+  if (h == 0) { 
+    sprite.frame.h = th;
+    sprite.position.h = th;
+  } else {
+    sprite.frame.h = h;
+    sprite.position.h = h;
+  }
 
   return sprite;
 }

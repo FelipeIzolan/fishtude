@@ -4,7 +4,6 @@
 
 #define WINDOW_WIDTH 160
 #define WINDOW_HEIGHT 144
-
 #define DELTA 0.03333
 
 #define LERP(s, e, w) (s + (e-s) * w)
@@ -32,4 +31,18 @@ SDL_Point cubicBenzierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, SDL_Point 
 
 SDL_Point lineMidpoint(SDL_Point s, SDL_Point e) {
   return (SDL_Point) { MID(s.x, e.x), MID(s.y, e.y) };
+}
+
+typedef struct OscillateRange {
+  int min;
+  int max;
+  int current;
+  int dir: 4; // -4 to 4
+} OscillateRange;
+
+void updateOscillateRange(OscillateRange * or) {
+  or->current += or->dir;
+
+  if (or->current >= or->max && or->dir > 0) or->dir = -or->dir;
+  if (or->current <= or->min && or->dir < 0) or->dir = -or->dir;
 }
