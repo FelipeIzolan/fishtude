@@ -1,3 +1,5 @@
+/*#define DEBUG*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -71,14 +73,14 @@ int main() {
   Fishing fishing = {
     { 14, 30 },
     { 14, 30 },
-    { -8, 8, -8, 2 },
+    { -10, 10, 0, 2 },
     0, 1,
     createSprite(renderer, "./sprites/fishing_mechanic.bmp", 0, 0, 0, 0),
     createSprite(renderer, "./sprites/fishing_pointer.bmp", 0, 0, 0, 0)
   };
  
-  Entity player = createEntity(renderer, "./sprites/player.bmp", 0, 24, 16, 16);
-  Player playerD = { PLAYER_NORMAL, 0 };
+  Entity eplayer = createEntity(renderer, "./sprites/player.bmp", 0, 24, 16, 16);
+  Player dplayer = { PLAYER_NORMAL, 0 };
 
   SDL_Texture * fish_sprite = createTexture(renderer, "./sprites/fish.bmp");
   Entity fish[128]; // <- SET MAX_FISH HERE!
@@ -99,48 +101,31 @@ int main() {
         case SDL_KEYDOWN: 
           if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; 
           if (event.key.keysym.sym == SDLK_x) {
-            playerD.state = playerD.state == PLAYER_NORMAL ? PLAYER_PRE_FISHING : playerD.state == PLAYER_PRE_FISHING ? PLAYER_FISHING : PLAYER_NORMAL;
+            dplayer.state = dplayer.state == PLAYER_NORMAL ? PLAYER_PRE_FISHING : dplayer.state == PLAYER_PRE_FISHING ? PLAYER_FISHING : PLAYER_NORMAL;
             
-            if (playerD.state == PLAYER_PRE_FISHING) setPreFishing(&fishing, &player);
-            if (playerD.state == PLAYER_FISHING) setFishing(&fishing);
+            if (dplayer.state == PLAYER_PRE_FISHING) setPreFishing(&fishing, &eplayer);
+            if (dplayer.state == PLAYER_FISHING) setFishing(&fishing);
           }
         break;
       }
     }
 
-    updatePlayer(keyboard, &player, &playerD);
-    updateFishing(&fishing, &player, &playerD);    
+    updatePlayer(keyboard, &eplayer, &dplayer);
+    updateFishing(&fishing, &eplayer, &dplayer);    
 
     // Render
     SDL_RenderClear(renderer);   
 
     drawSprite(renderer, &background);
-    drawEntity(renderer, &player);
-    
-    if (playerD.state == PLAYER_FISHING || playerD.state == PLAYER_FISHING_BACK) {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-      SDL_Point midpoint = lineMidpoint(fishing.start, fishing.end);
-      SDL_Point p1 = lineMidpoint(fishing.start, midpoint);
-      SDL_Point p2 = lineMidpoint(midpoint, fishing.end);
-     
-      p1.x += fishing.control.current;
-      p2.x += -fishing.control.current;
-
-      p1.x += cos(p1.y) * 5;
-      p1.y += sin(p1.x) * 5;
-
-      for (float i = 0; i < 1; i += 0.001) {
-        SDL_Point p = cubicBenzierCurve(fishing.start, p1, p2, fishing.end, i);
-        SDL_RenderDrawPoint(renderer, p.x, p.y);
-      }
-    }
+    drawPlayer(renderer, &eplayer);
+    drawFishing(renderer, &fishing, &dplayer);
 
     drawEntity(renderer, &fish[0]);
 
     SDL_SetRenderDrawColor(renderer, 15, 94, 156, 100);
     SDL_RenderFillRect(renderer, &water);
     
-    if (playerD.state == PLAYER_PRE_FISHING) {
+    if (dplayer.state == PLAYER_PRE_FISHING) {
       drawSprite(renderer, &fishing.frame);
       drawSprite(renderer, &fishing.pointer);
     }
@@ -154,7 +139,7 @@ int main() {
   // Free
   game_free:
 
-  destroyEntity(&player);
+  destroyEntity(&eplayer);
 
   destroySprite(&fishing.frame);
   destroySprite(&fishing.pointer);

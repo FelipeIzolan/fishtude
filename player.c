@@ -22,3 +22,11 @@ void updatePlayer(const Uint8 * keyboard, Entity * entity, Player * data) {
 
   entity->position.x = CLAMP(entity->position.x, 0, 144);
 }
+
+void drawPlayer(SDL_Renderer * renderer, Entity * entity) {
+  drawEntity(renderer, entity);
+  #ifdef DEBUG
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderDrawRect(renderer, &entity->position);
+  #endif
+}

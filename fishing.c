@@ -21,7 +21,6 @@ typedef struct Fishing {
   Sprite pointer;
 } Fishing;
 
-
 void setPreFishing(Fishing * fishing, Entity * player) {
   fishing->force = 0;
 
@@ -61,5 +60,28 @@ void updateFishing(Fishing * fishing, Entity * eplayer, Player * dplayer) {
 
     if (fishing->control.current != 0) updateOscillateRange(&fishing->control);
     if (fishing->end.y <= fishing->start.y) dplayer->state = PLAYER_NORMAL;  
+  }
+}
+
+void drawFishing(SDL_Renderer * renderer, Fishing * fishing, Player * dplayer) {
+  if (dplayer->state == PLAYER_FISHING || dplayer->state == PLAYER_FISHING_BACK) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_Point midpoint = lineMidpoint(fishing->start, fishing->end);
+    SDL_Point p1 = lineMidpoint(fishing->start, midpoint);
+    SDL_Point p2 = lineMidpoint(midpoint, fishing->end);
+     
+    p1.x += fishing->control.current;
+    p2.x += -fishing->control.current;
+
+    for (float i = 0; i < 1; i += 0.001) {
+      SDL_Point p = cubicBenzierCurve(fishing->start, p1, p2, fishing->end, i);
+      SDL_RenderDrawPoint(renderer, p.x, p.y);
+    }
+
+    #ifdef DEBUG
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderDrawPoint(renderer, p1.x, p1.y);
+    SDL_RenderDrawPoint(renderer, p2.x, p2.y);
+    #endif
   }
 }
