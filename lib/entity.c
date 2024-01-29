@@ -61,18 +61,15 @@ void updateEntity(Entity * entity) {
 
 void drawEntity(SDL_Renderer * renderer, Entity * entity) {
   SDL_RenderCopy(renderer, entity->texture, &entity->animation.frame, &entity->position);
+  #ifdef DEBUG
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderDrawRect(renderer, &entity->position);
+  #endif
 }
 
 void destroyEntity(Entity * entity) {
   SDL_DestroyTexture(entity->texture);
   entity->texture = NULL;
-}
-
-void destroyEntityTexture(Entity * entity) {
-  if (entity->texture != NULL) {
-    SDL_DestroyTexture(entity->texture);
-    entity->texture = NULL;
-  }
 }
 
 int checkEntityCollision(Entity * e1, Entity * e2) {

@@ -63,7 +63,7 @@ void updateFishing(Fishing * fishing, Entity * eplayer, Player * dplayer) {
   }
 }
 
-void drawFishing(SDL_Renderer * renderer, Fishing * fishing, Player * dplayer) {
+void drawFishingLine(SDL_Renderer * renderer, Fishing * fishing, Player * dplayer) {
   if (dplayer->state == PLAYER_FISHING || dplayer->state == PLAYER_FISHING_BACK) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Point midpoint = lineMidpoint(fishing->start, fishing->end);
@@ -83,5 +83,12 @@ void drawFishing(SDL_Renderer * renderer, Fishing * fishing, Player * dplayer) {
     SDL_RenderDrawPoint(renderer, p1.x, p1.y);
     SDL_RenderDrawPoint(renderer, p2.x, p2.y);
     #endif
+  }
+}
+
+void drawFishingInterface(SDL_Renderer * renderer, Fishing * fishing, Player * dplayer) {
+  if (dplayer->state == PLAYER_PRE_FISHING) {
+    drawSprite(renderer, &fishing->frame);
+    drawSprite(renderer, &fishing->pointer);
   }
 }

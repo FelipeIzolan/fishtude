@@ -9,7 +9,7 @@
 
 typedef struct Animation {
   SDL_Rect frame;
-  float time;   
+  float time;
   float multiplier;
   int column;
   int max_row;
@@ -44,11 +44,14 @@ void setAnimation(Animation * animation, int column, int max_row, float multipli
 }
 
 void setFrame(Animation * animation, int column, int row) {
-  animation->frame.x = row * animation->frame.w;
+  animation->max_row = 0;
+  animation->frame.x = (row - 1) * animation->frame.w;
   animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;
 }
 
 void updateAnimation(Animation * animation) {
-  animation->time = ICLAMP(animation->time + DELTA * animation->multiplier, 0, animation->max_row);
-  animation->frame.x = floorf(animation->time) * animation->frame.w;
+  if (animation->max_row > 0) {
+    animation->time = ICLAMP(animation->time + DELTA * animation->multiplier, 0, animation->max_row);
+    animation->frame.x = floorf(animation->time) * animation->frame.w;
+  }
 }
