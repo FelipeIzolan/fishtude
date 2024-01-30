@@ -43,7 +43,7 @@ void setAnimation(Animation * animation, int column, int max_row, float multipli
   animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;
 }
 
-void setFrame(Animation * animation, int column, int row) {
+void setFrameAnimation(Animation * animation, int column, int row) {
   animation->max_row = 0;
   animation->frame.x = (row - 1) * animation->frame.w;
   animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;

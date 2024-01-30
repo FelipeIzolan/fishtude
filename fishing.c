@@ -12,17 +12,16 @@
 typedef struct Fishing {
   SDL_Point start;
   SDL_Point end;
+
   OscillateRange control;
-  
-  int force: 8;
-  int direction: 2;
+  OscillateRange force;
 
   Sprite frame;
   Sprite pointer;
 } Fishing;
 
 void setPreFishing(Fishing * fishing, Entity * player) {
-  fishing->force = 0;
+  fishing->force.current = 0;
 
   fishing->frame.position.x = player->position.x + 20;
   fishing->frame.position.y = player->position.y - 10;
@@ -35,23 +34,20 @@ void setPreFishing(Fishing * fishing, Entity * player) {
 }
 
 void setFishing(Fishing * fishing) {
-  fishing->force = floorf(((float)fishing->force / 28) * 108) + 2; 
+  fishing->force.current = floorf(((float)fishing->force.current / fishing->force.max) * 108) + 2; 
 }
 
 void updateFishing(Fishing * fishing, Entity * eplayer, Player * dplayer) {
   if (dplayer->state == PLAYER_PRE_FISHING) { 
-    fishing->force += fishing->direction;
-    fishing->pointer.position.y = eplayer->position.y + 18 - fishing->force;      
-
-    if (fishing->direction == 1 && fishing->force >= 28) fishing->direction = -1;
-    if (fishing->direction == -1 && fishing->force <= 0) fishing->direction = 1;
+    updateOscillateRange(&fishing->force);
+    fishing->pointer.position.y = eplayer->position.y + 18 - fishing->force.current; 
   }
 
   if (dplayer->state == PLAYER_FISHING) {
     fishing->end.y = fishing->end.y + 2;
     updateOscillateRange(&fishing->control);
 
-    if (fishing->end.y >= fishing->start.y + fishing->force) dplayer->state = PLAYER_FISHING_BACK;
+    if (fishing->end.y >= fishing->start.y + fishing->force.current) dplayer->state = PLAYER_FISHING_BACK;
   }
 
 

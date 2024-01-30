@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL_rect.h>
+#include <time.h>
 
 #define WINDOW_WIDTH 160
 #define WINDOW_HEIGHT 144
@@ -31,6 +32,10 @@ SDL_Point cubicBenzierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, SDL_Point 
 
 SDL_Point lineMidpoint(SDL_Point s, SDL_Point e) {
   return (SDL_Point) { MID(s.x, e.x), MID(s.y, e.y) };
+}
+
+int rrandom(int min, int max) {
+  return rand() % (max - min + 1) + min;
 }
 
 typedef struct OscillateRange {

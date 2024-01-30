@@ -1,5 +1,6 @@
 /*#define DEBUG*/
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,6 +21,7 @@
 #include "lib/math.c"
 
 #include "fish.c"
+#include "cloud.c"
 #include "player.c"
 #include "fishing.c"
 
@@ -62,6 +64,7 @@ int main() {
   );
   if (renderer == NULL) error();
 
+  srand(time(NULL));
   SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
   SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -69,28 +72,34 @@ int main() {
   SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT};
   Sprite background = createSprite(renderer, "./sprites/background.bmp", 0, 0, 0, 0);
 
+  SDL_Texture * cloud_texture = createTexture(renderer, "./sprites/clouds.bmp");
+  SDL_Texture * fish_texture = createTexture(renderer, "./sprites/fish.bmp");
+  
   Fishing fishing = {
     { 14, 30 },
     { 14, 30 },
     { -10, 10, 0, 2 },
-    0, 1,
+    { 0, 28, 0, 1 },
     createSprite(renderer, "./sprites/fishing_mechanic.bmp", 0, 0, 0, 0),
     createSprite(renderer, "./sprites/fishing_pointer.bmp", 0, 0, 0, 0)
   };
- 
+
+  Sprite cloud[8];
+  createCloud(cloud, cloud_texture);
+
   Entity eplayer = createEntity(renderer, "./sprites/player.bmp", 0, 24, 16, 16);
   Player dplayer = { PLAYER_NORMAL, 0 };
-
-  SDL_Texture * fish_sprite = createTexture(renderer, "./sprites/fish.bmp");
+  
   cvector_vector_type(Entity) efish = NULL;
   cvector_vector_type(Fish) dfish = NULL;
-  cvector_push_back(efish, createEntityTexture(fish_sprite, -16, 48, 8, 8));
-  setFrame(&efish[0].animation, 1, 1);
+  cvector_push_back(efish, createEntityTexture(fish_texture, -16, 48, 8, 8));
+  cvector_push_back(dfish, (Fish){ 0 });
+  setFrameAnimation(&efish[0].animation, 1, 1);
 
   // Game-Loop
   while (1) { 
     framerate(1);
-    
+
     SDL_Event event;
     const Uint8* keyboard = SDL_GetKeyboardState(NULL);
 
@@ -111,12 +120,15 @@ int main() {
 
     updatePlayer(keyboard, &eplayer, &dplayer);
     updateFishing(&fishing, &eplayer, &dplayer);
-    for (int i = 0; i < cvector_size(efish); i++) updateFish(&efish[i], &dfish[i]); 
+    for (int i = 0; i < cvector_size(efish); i++) updateFish(&efish[i], &dfish[i], &eplayer, &fishing, efish, dfish, i); 
+    for (int i = 0; i < 8; i++) updateCloud(&cloud[i]);
 
     // ------ Render
     SDL_RenderClear(renderer);   
 
     drawSprite(renderer, &background);
+    
+    for (int i = 0; i < 8; i++) drawSprite(renderer, &cloud[i]); 
     drawEntity(renderer, &eplayer);
     for (int i = 0; i < cvector_size(efish); i++) drawEntity(renderer, &efish[i]); 
     drawFishingLine(renderer, &fishing, &dplayer);
@@ -141,7 +153,7 @@ int main() {
   destroySprite(&background);
   destroySprite(&fishing.frame);
   destroySprite(&fishing.pointer);
-  SDL_DestroyTexture(fish_sprite);
+  SDL_DestroyTexture(fish_texture);
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
