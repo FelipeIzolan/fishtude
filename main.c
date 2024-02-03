@@ -1,4 +1,4 @@
-/*#define DEBUG*/
+#define DEBUG
 
 #include <time.h>
 #include <stdio.h>
@@ -70,6 +70,8 @@ int main() {
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
   
   SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT};
+  
+  Sprite ui_x = createSprite(renderer, "./sprites/ui_x.bmp", 2, 124, 0, 0);
   Sprite background = createSprite(renderer, "./sprites/background.bmp", 0, 0, 0, 0);
 
   SDL_Texture * cloud_texture = createTexture(renderer, "./sprites/clouds.bmp");
@@ -137,6 +139,7 @@ int main() {
     SDL_RenderFillRect(renderer, &water);
 
     drawFishingInterface(renderer, &fishing, &dplayer);
+    drawSprite(renderer, &ui_x);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderPresent(renderer);
@@ -151,8 +154,12 @@ int main() {
   destroyEntity(&eplayer);
 
   destroySprite(&background);
+  destroySprite(&ui_x);
+
   destroySprite(&fishing.frame);
   destroySprite(&fishing.pointer);
+  
+  SDL_DestroyTexture(cloud_texture);
   SDL_DestroyTexture(fish_texture);
 
   SDL_DestroyRenderer(renderer);

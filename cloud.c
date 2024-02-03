@@ -1,10 +1,7 @@
 #include <math.h>
-#include "SDL_log.h"
-#include "SDL_stdinc.h"
 
 #include "lib/math.c"
 #include "lib/sprite.c"
-
 
 void createCloud(Sprite * arr, SDL_Texture * texture) {
   for (int i = 0; i < 8; i++) {
