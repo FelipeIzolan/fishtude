@@ -11,17 +11,15 @@ typedef struct Entity {
   SDL_Rect position;
   Animation animation;
   SDL_Texture * texture;
+  unsigned int flip: 2; 
 } Entity;
 
 Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {  
   Entity entity;
 
-  entity.position.x = x;
-  entity.position.y = y;
-  entity.position.w = w;
-  entity.position.h = h;
-
+  entity.flip = SDL_FLIP_NONE;
   entity.texture = createTexture(renderer, src);
+  entity.position = (SDL_Rect) { x, y, w, h };
   entity.animation = createAnimation(entity.texture, w, h);
 
   setAnimation(&entity.animation, 1, 1, 0);
@@ -32,19 +30,16 @@ Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, in
 Entity createEntityTexture(SDL_Texture * texture, int x, int y, int w, int h) {
   Entity entity;
 
-  entity.position.x = x;
-  entity.position.y = y;
-  entity.position.w = w;
-  entity.position.h = h;
-
+  entity.flip = SDL_FLIP_NONE;
   entity.texture = texture;
+  entity.position = (SDL_Rect) { x, y, w, h };
   entity.animation = createAnimation(entity.texture, w, h);
   
   return entity;
 }
 
 void drawEntity(SDL_Renderer * renderer, Entity * entity) {
-  SDL_RenderCopy(renderer, entity->texture, &entity->animation.frame, &entity->position);
+  SDL_RenderCopyEx(renderer, entity->texture, &entity->animation.frame, &entity->position, 0, NULL, entity->flip);
   #ifdef DEBUG
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderDrawRect(renderer, &entity->position);

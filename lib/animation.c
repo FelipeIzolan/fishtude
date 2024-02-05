@@ -11,7 +11,7 @@ typedef struct Animation {
   SDL_Rect frame;
   float time;
   float multiplier;
-  int column;
+  int row;
   int max_row;
   int max_column;
 } Animation;
@@ -22,36 +22,34 @@ Animation createAnimation(SDL_Texture * texture, int w, int h) {
 
   SDL_QueryTexture(texture, NULL, NULL, &tw, &th);
 
-  animation.frame.w = w;
-  animation.frame.h = h;
-
-  animation.max_row = tw / w;
-  animation.max_column = th / h;
+  animation.frame = (SDL_Rect) { 0, 0, w, h };
+  animation.max_column = tw / w;
+  animation.max_row = th / h;
 
   return animation;
 }
 
-void setAnimation(Animation * animation, int column, int max_row, float multiplier) {
-  if (animation->column == column) return;
+void setAnimation(Animation * animation, int row, int max_column, float multiplier) {
+  if (animation->row == row) return;
 
   animation->time = 0;
-  animation->column = column;
-  animation->max_row = max_row;
+  animation->row = row;
+  animation->max_column = max_column;
   animation->multiplier = multiplier;
 
   animation->frame.x = 0;
-  animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;
+  animation->frame.y = (row >= animation->max_row ? animation->max_row - 1 : row - 1) * animation->frame.h;
 }
 
 void setFrameAnimation(Animation * animation, int column, int row) {
-  animation->max_row = 0;
-  animation->frame.x = (row - 1) * animation->frame.w;
-  animation->frame.y = (column >= animation->max_column ? animation->max_column - 1 : column - 1) * animation->frame.h;
+  animation->max_column = 0;
+  animation->frame.x = (column - 1) * animation->frame.w;
+  animation->frame.y = (row >= animation->max_row ? animation->max_row - 1 : row - 1) * animation->frame.h;
 }
 
 void updateAnimation(Animation * animation) {
-  if (animation->max_row > 0) {
-    animation->time = ICLAMP(animation->time + DELTA * animation->multiplier, 0, animation->max_row);
+  if (animation->max_column > 0) {
+    animation->time = ICLAMP(animation->time + DELTA * animation->multiplier, 0, animation->max_column);
     animation->frame.x = floorf(animation->time) * animation->frame.w;
   }
 }

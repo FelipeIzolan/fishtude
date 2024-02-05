@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL_rect.h>
-#include <time.h>
+#include <stdlib.h>
 
 #define WINDOW_WIDTH 160
 #define WINDOW_HEIGHT 144
@@ -38,16 +38,6 @@ int rrandom(int min, int max) {
   return rand() % (max - min + 1) + min;
 }
 
-typedef struct OscillateRange {
-  int min;
-  int max;
-  int current;
-  int dir: 4; // -4 to 4
-} OscillateRange;
-
-void updateOscillateRange(OscillateRange * or) {
-  or->current += or->dir;
-
-  if (or->current >= or->max && or->dir > 0) or->dir = -or->dir;
-  if (or->current <= or->min && or->dir < 0) or->dir = -or->dir;
+double drandom() {
+  return (double)rand() / RAND_MAX;
 }
