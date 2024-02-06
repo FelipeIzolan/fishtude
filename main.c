@@ -77,7 +77,7 @@ int main() {
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
   createCloud(cloud, cloud_texture);
 
-  Player player = { PLAYER_NORMAL, 0, createEntity(renderer, "./assets/player.bmp", 0, 24, 16, 16) };
+  Player player = { PLAYER_DEFAULT, 0, createEntity(renderer, "./assets/player.bmp", 0, 24, 16, 16) };
   Fishing fishing = {
     { 14, 30 },
     { 14, 30 },
@@ -102,12 +102,12 @@ int main() {
         case SDL_QUIT: goto game_free;
         case SDL_KEYDOWN: 
           if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; 
-          if (event.key.keysym.sym == SDLK_x && player.state != PLAYER_FISHING_BACK) {
-            player.state = player.state == PLAYER_NORMAL ? PLAYER_PRE_FISHING : 
-                           player.state == PLAYER_PRE_FISHING ? PLAYER_FISHING : 
-                           player.state == PLAYER_FISHING ? PLAYER_FISHING_BACK : PLAYER_NORMAL;
+          if (event.key.keysym.sym == SDLK_x && player.state != PLAYER_BACK) {
+            player.state = player.state == PLAYER_DEFAULT ? PLAYER_MECHANIC : 
+                           player.state == PLAYER_MECHANIC ? PLAYER_FISHING : 
+                           player.state == PLAYER_FISHING ? PLAYER_BACK : PLAYER_DEFAULT;
 
-            if (player.state == PLAYER_PRE_FISHING) setPreFishing(&fishing, &player);
+            if (player.state == PLAYER_MECHANIC) setPreFishing(&fishing, &player);
             if (player.state == PLAYER_FISHING) setFishing(&fishing);
           }
         break;

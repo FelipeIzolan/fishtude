@@ -8,10 +8,12 @@
   - [X] Movement
   - [X] Fishing
   - [ ] Skill-Tree 
-- [ ] Fish
-  - [ ] Movement
+- [X] Fish
+  - [X] Movement
     - [X] Default
-    - [ ] Wave
+    - [X] Wave
+    - [X] Back
+
 - [ ] Game
   - [ ] Main-Menu 
   - [ ] Pause

@@ -38,7 +38,7 @@ void setFishing(Fishing * fishing) {
 }
 
 void updateFishing(Fishing * fishing, Player * player) {
-  if (player->state == PLAYER_PRE_FISHING) { 
+  if (player->state == PLAYER_MECHANIC) { 
     updateOscillateRange(&fishing->force);
     fishing->pointer.position.y = player->entity.position.y + 18 - fishing->force.current; 
   }
@@ -47,15 +47,14 @@ void updateFishing(Fishing * fishing, Player * player) {
     fishing->end.y = fishing->end.y + 2;
     updateOscillateRange(&fishing->control);
 
-    if (fishing->end.y >= fishing->start.y + fishing->force.current) player->state = PLAYER_FISHING_BACK;
+    if (fishing->end.y >= fishing->start.y + fishing->force.current) player->state = PLAYER_BACK;
   }
 
-
-  if (player->state == PLAYER_FISHING_BACK) {
+  if (player->state == PLAYER_BACK) {
     fishing->end.y = fishing->end.y - 2;
 
     if (fishing->control.current != 0) updateOscillateRange(&fishing->control);
-    if (fishing->end.y <= fishing->start.y) player->state = PLAYER_NORMAL;  
+    if (fishing->end.y <= fishing->start.y) player->state = PLAYER_DEFAULT;  
   }
 }
 
@@ -83,7 +82,7 @@ void drawFishingLine(SDL_Renderer * renderer, Fishing * fishing, Player * player
     #endif
   }
 
-  if (player->state == PLAYER_FISHING_BACK) {
+  if (player->state == PLAYER_BACK) {
     SDL_RenderDrawLine(renderer, fishing->start.x, fishing->start.y, fishing->end.x, fishing->end.y);
     #ifdef DEBUG
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -94,7 +93,7 @@ void drawFishingLine(SDL_Renderer * renderer, Fishing * fishing, Player * player
 }
 
 void drawFishingInterface(SDL_Renderer * renderer, Fishing * fishing, Player * player) {
-  if (player->state == PLAYER_PRE_FISHING) {
+  if (player->state == PLAYER_MECHANIC) {
     drawSprite(renderer, &fishing->frame);
     drawSprite(renderer, &fishing->pointer);
   }

@@ -39,5 +39,5 @@ int rrandom(int min, int max) {
 }
 
 double drandom() {
-  return (double)rand() / RAND_MAX;
+  return (double) rand() / RAND_MAX;
 }
