@@ -26,7 +26,7 @@ typedef struct OscillateRange {
 
 void updateOscillateRange(OscillateRange * or) {
   or->current += or->dir;
-  if (or->current >= or->max && or->dir > 0 || or->current <= or->min && or->dir < 0) or->dir = -or->dir;
+  if ((or->current >= or->max && or->dir > 0) || (or->current <= or->min && or->dir < 0)) or->dir = -or->dir;
 }
 
 // --------------------
