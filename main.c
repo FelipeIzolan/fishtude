@@ -16,6 +16,7 @@
 #include "lib/cvector.h"
 #include "lib/sprite.c"
 #include "lib/entity.c"
+#include "lib/number.c"
 #include "lib/utils.c"
 #include "lib/math.c"
 
@@ -71,10 +72,13 @@ int main() {
   SDL_Texture * cloud_texture = createTexture(renderer, "./assets/clouds.bmp");
   SDL_Texture * fish_texture = createTexture(renderer, "./assets/fish.bmp");
   
-  SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
-  Sprite cloud[8];
   Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 2, 124, 0, 0);
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
+  Sprite coin = createSprite(renderer, "./assets/coin.bmp", 2, 2, 4, 6);
+  Number number = { 5, 6, createTexture(renderer, "./assets/number.bmp") };
+  SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
+
+  Sprite cloud[8];
   createCloud(cloud, cloud_texture);
 
   Player player = { PLAYER_DEFAULT, 0, createEntity(renderer, "./assets/player.bmp", 0, 24, 16, 16) };
@@ -147,6 +151,8 @@ int main() {
 
     drawFishingInterface(renderer, &fishing, &player);
     drawSprite(renderer, &ui_x);
+    drawSprite(renderer, &coin);
+    drawNumber(renderer, &number, 9999, 7, 2);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderPresent(renderer);
@@ -166,6 +172,8 @@ int main() {
   destroySprite(&fishing.frame);
   destroySprite(&fishing.pointer);
   
+  SDL_DestroyTexture(number.texture);
+
   SDL_DestroyTexture(cloud_texture);
   SDL_DestroyTexture(fish_texture);
 

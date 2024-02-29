@@ -11,7 +11,7 @@ typedef struct Entity {
   SDL_Rect position;
   Animation animation;
   SDL_Texture * texture;
-  unsigned int flip: 2; 
+  SDL_RendererFlip flip;
 } Entity;
 
 Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {  

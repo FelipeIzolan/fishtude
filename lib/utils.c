@@ -4,8 +4,6 @@
 #include <SDL_render.h>
 #include <SDL_surface.h>
 
-#include "math.c"
-
 SDL_Texture * createTexture(SDL_Renderer * renderer, char * src) {
   SDL_Surface * surface = SDL_LoadBMP(src);
   SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);

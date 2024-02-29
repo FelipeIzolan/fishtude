@@ -25,6 +25,7 @@ void setPreFishing(Fishing * fishing, Player * player) {
 
   fishing->frame.position.x = player->entity.position.x + 20;
   fishing->frame.position.y = player->entity.position.y - 10;
+
   fishing->pointer.position.x = player->entity.position.x + 15;
   fishing->pointer.position.y = player->entity.position.y + 18;
               
@@ -53,8 +54,8 @@ void updateFishing(Fishing * fishing, Player * player) {
   if (player->state == PLAYER_BACK) {
     fishing->end.y = fishing->end.y - 2;
 
-    if (fishing->control.current != 0) updateOscillateRange(&fishing->control);
     if (fishing->end.y <= fishing->start.y) player->state = PLAYER_DEFAULT;  
+    if (fishing->control.current != 0) updateOscillateRange(&fishing->control);
   }
 }
 

@@ -10,10 +10,11 @@
 enum fish_state {
   FISH_DEFAULT,
   FISH_WAVE,
-  FISH_BACK
+  FISH_BACK,
+  FISH_WAVE_BACK
 };
 
-union FishMovement {
+struct FishMovement {
   SineWave wave;
   int back;
 };
@@ -23,7 +24,7 @@ typedef struct Fish {
   int price: 8; // max = 255
   Entity entity;
   uint state: 4;
-  union FishMovement movement;
+  struct FishMovement movement;
 } Fish;
 
 Fish createFish(SDL_Texture * texture) {
@@ -42,7 +43,11 @@ Fish createFish(SDL_Texture * texture) {
     fish.movement.back = rrandom(16, 144);
   } else if (c > 0.5) {
     fish.state = FISH_WAVE;
-    fish.movement.wave = (SineWave) { rrandom(4, 10), rrandom(1, 8), fish.entity.position.y };
+    fish.movement.wave = (SineWave) { rrandom(4, 10), rrandom(2, 8), fish.entity.position.y };
+  } else if (c > 0.4) {
+    fish.state = FISH_WAVE_BACK;
+    fish.movement.back = rrandom(16, 144);
+    fish.movement.wave = (SineWave) { rrandom(4, 10), rrandom(2, 8), fish.entity.position.y };
   }
 
   return fish;
@@ -50,18 +55,24 @@ Fish createFish(SDL_Texture * texture) {
 
 void updateFish(Fish * fish, Entity * player, Fishing * fishing, Fish * vector, int index) {
   if (!fish->catch) {
+    fish->entity.position.x += fish->entity.flip == SDL_FLIP_HORIZONTAL ? -1 : 1;
+    
     switch (fish->state) {
       case FISH_DEFAULT:      
-        fish->entity.position.x += fish->entity.flip == SDL_FLIP_HORIZONTAL ? -1 : 1;
         break;
       case FISH_WAVE:
-        fish->entity.position.x += fish->entity.flip == SDL_FLIP_HORIZONTAL ? -1 : 1;
         fish->entity.position.y = calcSineWave(&fish->movement.wave, fish->entity.position.x);
         break;
       case FISH_BACK:
-        fish->entity.position.x += fish->entity.flip == SDL_FLIP_HORIZONTAL ? -1 : 1;
         if (fish->entity.position.x == fish->movement.back) 
           fish->entity.flip = fish->entity.flip == SDL_FLIP_HORIZONTAL ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+        break;
+      case FISH_WAVE_BACK: 
+        fish->entity.position.y = calcSineWave(&fish->movement.wave, fish->entity.position.x);
+
+        if (fish->entity.position.x == fish->movement.back)
+          fish->entity.flip = fish->entity.flip == SDL_FLIP_HORIZONTAL ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+        break;
     }
 
     if (checkEntityAndPointCollision(&fish->entity, &fishing->end)) fish->catch = 1;

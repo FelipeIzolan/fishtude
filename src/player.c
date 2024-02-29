@@ -25,6 +25,8 @@ void updatePlayer(const Uint8 * keyboard, Player * player) {
     
     if (keyboard[SDL_SCANCODE_LEFT] || keyboard[SDL_SCANCODE_RIGHT]) setAnimation(&player->entity.animation, 2, 2, 4);
     else setAnimation(&player->entity.animation, 1, 4, 4);
+  
+    player->entity.position.x = CLAMP(player->entity.position.x, 0, 144);
   }
 
   if (player->state != PLAYER_DEFAULT) {
@@ -32,5 +34,4 @@ void updatePlayer(const Uint8 * keyboard, Player * player) {
   }
   
   updateAnimation(&player->entity.animation);
-  player->entity.position.x = CLAMP(player->entity.position.x, 0, 144);
 }

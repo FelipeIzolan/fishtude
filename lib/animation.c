@@ -21,7 +21,7 @@ Animation createAnimation(SDL_Texture * texture, int w, int h) {
   int tw, th;
 
   SDL_QueryTexture(texture, NULL, NULL, &tw, &th);
-
+  
   animation.frame = (SDL_Rect) { 0, 0, w, h };
   animation.max_column = tw / w;
   animation.max_row = th / h;

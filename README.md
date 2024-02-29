@@ -5,21 +5,23 @@
 ## Development 👨‍💻
 
 - [ ] Player
-  - [X] Movement
-  - [X] Fishing
-  - [ ] Skill-Tree 
+    - [X] Movement
+    - [X] Fishing
+    - [ ] Gold
+    - [ ] Skill-Tree
+
 - [X] Fish
-  - [X] Movement
-    - [X] Default
-    - [X] Wave
-    - [X] Back
+    - [X] Movement
+        - [X] Default
+        - [X] Wave
+        - [X] Back
+        - [X] Wave-Back
 
 - [ ] Game
-  - [ ] Main-Menu 
-  - [ ] Pause
-  - [ ] Save
-  - [ ] Gold
-           
+    - [ ] Main-Menu 
+    - [ ] Pause
+    - [ ] Save
+
 ## License 📜
 
 - [fishtude](https://github.com/FelipeIzolan/fishtude) - The Unlicensed
