@@ -1,6 +1,6 @@
 # Fishtude 🐟
 
-<img width=512 src="https://github.com/FelipeIzolan/fishtude/assets/80170121/eddb402c-e8e3-400e-bf28-35b4b0630158">
+<img width=512 src="https://github.com/FelipeIzolan/fishtude/assets/80170121/36610445-89a7-4ab8-af3b-734ddbf50630">
 
 ## Development 👨‍💻
 
