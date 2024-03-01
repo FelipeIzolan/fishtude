@@ -72,8 +72,8 @@ int main() {
   SDL_Texture * cloud_texture = createTexture(renderer, "./assets/clouds.bmp");
   SDL_Texture * fish_texture = createTexture(renderer, "./assets/fish.bmp");
   
-  Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 2, 124, 0, 0);
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
+  Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 2, 124, 0, 0);
   Sprite coin = createSprite(renderer, "./assets/coin.bmp", 2, 2, 4, 6);
   Number number = { 5, 6, createTexture(renderer, "./assets/number.bmp") };
   SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
@@ -122,7 +122,7 @@ int main() {
     fish_time -= DELTA;
     updatePlayer(keyboard, &player);
     updateFishing(&fishing, &player);
-    for (int i = 0; i < cvector_size(fish); i++) updateFish(&fish[i], &player.entity, &fishing, fish, i); 
+    for (int i = 0; i < cvector_size(fish); i++) updateFish(&fish[i], &player, &fishing, fish, i); 
     for (int i = 0; i < 8; i++) updateCloud(&cloud[i]);
     // ------
 
@@ -152,7 +152,7 @@ int main() {
     drawFishingInterface(renderer, &fishing, &player);
     drawSprite(renderer, &ui_x);
     drawSprite(renderer, &coin);
-    drawNumber(renderer, &number, 9999, 7, 2);
+    drawNumber(renderer, &number, player.gold, 7, 2);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderPresent(renderer);

@@ -13,8 +13,8 @@ enum player_state {
 };
 
 typedef struct Player {
-  uint state: 4;
-  long long int gold;
+  uint state: 2;
+  uint gold: 14;
   Entity entity;
 } Player;
 

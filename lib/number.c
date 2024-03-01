@@ -13,9 +13,9 @@ typedef struct Number {
   SDL_Texture * texture;
 } Number;
 
-void drawNumber(SDL_Renderer * renderer, Number * number, int v, int x, int y) {
-  char * n = malloc(sizeof(char) * (int)(log10(v) + 1));
-  sprintf(n, "%i", v);
+void drawNumber(SDL_Renderer * renderer, Number * number, uint v, int x, int y) {
+  char * n = malloc(sizeof(char) * (int)((v == 0 ? 0 : log10(v)) + 1));
+  sprintf(n, "%u", v);
 
   for (int i = 0; i < strlen(n); i++) {
     switch (n[i]) {

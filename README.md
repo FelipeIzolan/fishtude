@@ -7,7 +7,7 @@
 - [ ] Player
     - [X] Movement
     - [X] Fishing
-    - [ ] Gold
+    - [X] Gold
     - [ ] Skill-Tree
 
 - [X] Fish

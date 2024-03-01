@@ -6,6 +6,8 @@
 #include "../lib/utils.c"
 
 #include "fishing.c"
+#include "player.c"
+#include <math.h>
 
 enum fish_state {
   FISH_DEFAULT,
@@ -21,21 +23,31 @@ struct FishMovement {
 
 typedef struct Fish {   
   int catch: 2;
-  int price: 8; // max = 255
+  uint gold: 6; // max=64;
+  uint state: 2;
   Entity entity;
-  uint state: 4;
   struct FishMovement movement;
 } Fish;
 
-Fish createFish(SDL_Texture * texture) {
-  Fish fish = { 0, 0, createEntityTexture(texture, 0, rrandom(40, 128), 8, 8), FISH_DEFAULT };
-  setFrameAnimation(&fish.entity.animation, rrandom(1, 16), 1);
- 
-  if (drandom() < 0.48) fish.entity.flip = SDL_FLIP_HORIZONTAL;
-  
-  if (fish.entity.flip == SDL_FLIP_HORIZONTAL) fish.entity.position.x = rrandom(168, 680);
-  else fish.entity.position.x = rrandom(-520, -8);
+uint calcFishGold(Fish * fish) {
+  int v = 0;
 
+  switch (fish->state) {
+    case FISH_DEFAULT: v = 2; break;
+    case FISH_BACK: v = 3; break;
+    case FISH_WAVE: v = 1; break;
+    case FISH_WAVE_BACK: v = 3; break;
+  }
+
+  v += round((double)(fish->entity.position.y - 40) / 88 * 8);
+
+  return v;
+}
+
+Fish createFish(SDL_Texture * texture) {
+  Fish fish = { 0, 0, FISH_DEFAULT, createEntityTexture(texture, 0, rrandom(40, 128), 8, 8) };
+
+  // MOVEMENT ---------------------------------------
   double c = drandom();
 
   if (c > 0.8) { 
@@ -49,11 +61,21 @@ Fish createFish(SDL_Texture * texture) {
     fish.movement.back = rrandom(16, 144);
     fish.movement.wave = (SineWave) { rrandom(4, 10), rrandom(2, 8), fish.entity.position.y };
   }
+  // -------------------------------------------------
 
+  // DIRECTION ---------------------------------------
+  if (drandom() < 0.48) fish.entity.flip = SDL_FLIP_HORIZONTAL;
+  if (fish.entity.flip == SDL_FLIP_HORIZONTAL) fish.entity.position.x = rrandom(168, 680);
+  else fish.entity.position.x = rrandom(-520, -8);
+  // -------------------------------------------------
+  
+  fish.gold = calcFishGold(&fish);
+
+  setFrameAnimation(&fish.entity.animation, rrandom(1, 16), 1);
   return fish;
 }
 
-void updateFish(Fish * fish, Entity * player, Fishing * fishing, Fish * vector, int index) {
+void updateFish(Fish * fish, Player * player, Fishing * fishing, Fish * vector, int index) {
   if (!fish->catch) {
     fish->entity.position.x += fish->entity.flip == SDL_FLIP_HORIZONTAL ? -1 : 1;
     
@@ -82,6 +104,9 @@ void updateFish(Fish * fish, Entity * player, Fishing * fishing, Fish * vector, 
     fish->entity.position.x = fishing->end.x - 4;
     fish->entity.position.y = fishing->end.y - 4;
 
-    if (checkEntityCollision(&fish->entity, player)) cvector_erase(vector, index);
+    if (checkEntityCollision(&fish->entity, &player->entity)) {
+      player->gold += fish->gold;
+      cvector_erase(vector, index);
+    }
   } 
 }
