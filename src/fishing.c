@@ -55,7 +55,6 @@ void updateFishing(Fishing * fishing, Player * player) {
     fishing->end.y = fishing->end.y - 2;
 
     if (fishing->end.y <= fishing->start.y) player->state = PLAYER_DEFAULT;  
-    if (fishing->control.current != 0) updateOscillateRange(&fishing->control);
   }
 }
 

@@ -59,7 +59,7 @@ Sprite createSpriteTexture(SDL_Texture * texture, int x, int y, int w, int h) {
   return sprite;
 }
 
-void setFrameSprite(Sprite * sprite, int column, int row) {
+void setSpriteFrame(Sprite * sprite, int column, int row) {
   sprite->frame.x = (column - 1) * sprite->frame.w;
   sprite->frame.y = (row - 1) * sprite->frame.h;
 }
