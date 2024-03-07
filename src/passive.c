@@ -14,33 +14,64 @@ typedef struct Passive {
   Sprite sprite;
 } Passive;
 
-Passive * createPassive(SDL_Texture * texture, int id, int x, int y, double r, int m) {
+enum passive_id {
+  YELLOW,
+  BLUE,
+  GREEN,
+  PURPLE,
+  RED,
+  SYELLOW
+};
+
+
+Passive * createPassive(SDL_Texture * texture, Passive * pp, int id, double r, int m) {
   Passive * p = malloc(sizeof(Passive));
   
+  int x = pp->sprite.position.x;
+  int y = pp->sprite.position.y;
+
   p->id = id;
   p->active = 0;
-  p->sprite = createSpriteTexture(texture, x + cos(r) * m, y + sin(r) * m, 12, 12);
-  
+  p->sprite = id < SYELLOW ? 
+    createSpriteTexture(texture, x + cos(r) * m, y + sin(r) * m, 12, 12) : 
+    createSpriteTexture(texture, x + cos(r) * m, y + sin(r) * m, 14, 14);
+
+  id < SYELLOW ? 
+  setSpriteFrame(&p->sprite, p->id + 1, 1):
+  setSpriteFramePosition(&p->sprite, (id - 5) * 14, 12);
+
   return p;
 }
 
 Node * createTree(SDL_Texture * texture) {
-  Node * root = NodeNew(createPassive(texture, 1, 8, 28, 0, 0), 2);
-  ((Passive *)root->data)->active = 1;
+  Passive * p = malloc(sizeof(Passive));
 
-  NodeNewChild(root, createPassive(texture, 1, ((Passive *)root->data)->sprite.position.x, ((Passive *)root->data)->sprite.position.y - 20, 0, 0), 1);
-  Node * p1 = NodeNewChild(root, createPassive(texture, 1, ((Passive *)root->data)->sprite.position.x, ((Passive *)root->data)->sprite.position.y, M_PI / 12, 30), 1);
+  p->id = 1;
+  p->active = 0;
+  p->sprite = createSpriteTexture(texture, 74, 66, 12, 12);
 
-  NodeNewChild(p1, createPassive(texture, 1, ((Passive *)p1->data)->sprite.position.x, ((Passive *)p1->data)->sprite.position.y, 2 * M_PI, 30), 0);
 
+  Node * root = NodeNew(p, 4);
+  Node * s1 = NodeNewChild(root, createPassive(texture, ((Passive *)root->data), SYELLOW, 3 * M_PI / 2, 18), 2);
+
+  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), BLUE, 2 * M_PI, 18), 0);
+  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), GREEN, M_PI, 18), 0);
+  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), PURPLE, M_PI / 2, 18), 0);
+
+  NodeNewChild(s1, createPassive(texture, ((Passive *)s1->data), YELLOW, (4 * M_PI) / 3, 18), 0);
+  NodeNewChild(s1, createPassive(texture, ((Passive *)s1->data), YELLOW, (5 * M_PI) / 3, 18), 0);
 
   return root;
 }
 
-void drawPassive(SDL_Renderer * renderer, Node * node) {
+void drawTree(SDL_Renderer * renderer, Node * node) {
   Passive * p = ((Passive *)node->data);
 
-  for (int i = 0; i < node->length; i++) { 
+  for (int i = 0; i < node->length; i++) {
+    ((Passive * )node->children[i]->data)->active ?
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) :
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+
     SDL_RenderDrawLine(
       renderer, 
       p->sprite.position.x + 6,
@@ -49,24 +80,11 @@ void drawPassive(SDL_Renderer * renderer, Node * node) {
       ((Passive *)node->children[i]->data)->sprite.position.y + 6
     );
 
-    drawPassive(renderer, node->children[i]);
+    drawTree(renderer, node->children[i]);
   }
 
   if (p->active) SDL_SetTextureColorMod(p->sprite.texture, 255, 255, 255);
   else SDL_SetTextureColorMod(p->sprite.texture, 100, 100, 100);
 
   drawSprite(renderer, &((Passive *)node->data)->sprite);
-}
-
-void drawTree(SDL_Renderer * renderer, Node * root) {
-  SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-  drawPassive(renderer, root);
-/*  drawSprite(renderer, &((Passive *)root->data)->sprite);*/
-/*  drawSprite(renderer, &((Passive *)root->children[0]->data)->sprite);*/
-  
-
-
-/*  SDL_RenderDrawLine(renderer, ((Passive *)root->data)->sprite.position.x + 6, ((Passive *)root->data)->sprite.position.y + 6,*/
-  /*((Passive *)root->children[0]->data)->sprite.position.x + 6, ((Passive *)root->children[0]->data)->sprite.position.y + 6*/
-  /*      );*/
 }

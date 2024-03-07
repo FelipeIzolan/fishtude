@@ -64,6 +64,11 @@ void setSpriteFrame(Sprite * sprite, int column, int row) {
   sprite->frame.y = (row - 1) * sprite->frame.h;
 }
 
+void setSpriteFramePosition(Sprite * sprite, int x, int y) {
+  sprite->frame.x = x;
+  sprite->frame.y = y;
+}
+
 void drawSprite(SDL_Renderer * renderer, Sprite * sprite) {
   SDL_RenderCopy(renderer, sprite->texture, &sprite->frame, &sprite->position);
 }

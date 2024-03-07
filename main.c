@@ -76,7 +76,7 @@ int main() {
   
   SDL_Texture * fish_texture = createTexture(renderer, "./assets/fish.bmp");
   SDL_Texture * cloud_texture = createTexture(renderer, "./assets/clouds.bmp");
-  SDL_Texture * passive_texture = createTexture(renderer, "./assets/passives/1.bmp");
+  SDL_Texture * passive_texture = createTexture(renderer, "./assets/passives.bmp");
 
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
   Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 2, 124, 0, 0);
@@ -121,11 +121,9 @@ int main() {
         case SDL_QUIT: goto game_free;
         case SDL_KEYDOWN:
           if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; 
+          if (event.key.keysym.sym == SDLK_z) scene = scene == GAME ? SKILL_TREE : GAME;
           
           if (scene == GAME) {
-            if (event.key.keysym.sym == SDLK_z) {
-              scene = SKILL_TREE;
-            }
 
             if (event.key.keysym.sym == SDLK_x && player.state != PLAYER_BACK) {
               player.state = player.state == PLAYER_DEFAULT ? PLAYER_MECHANIC : 
@@ -187,6 +185,7 @@ int main() {
     if (scene == SKILL_TREE) {
       SDL_SetRenderDrawColor(renderer, 69, 40, 60, 255);
       SDL_RenderFillRect(renderer, &background.position);
+      SDL_SetRenderDrawColor(renderer, 255,255,255,255);
       drawTree(renderer, root);
     }
 
