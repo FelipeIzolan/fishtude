@@ -18,11 +18,9 @@ Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, in
   Entity entity;
 
   entity.flip = SDL_FLIP_NONE;
-  entity.texture = createTexture(renderer, src);
   entity.position = (SDL_Rect) { x, y, w, h };
+  entity.texture = createTexture(renderer, src);
   entity.animation = createAnimation(entity.texture, w, h);
-
-  setAnimation(&entity.animation, 1, 1, 0);
 
   return entity;
 }
@@ -31,8 +29,8 @@ Entity createEntityTexture(SDL_Texture * texture, int x, int y, int w, int h) {
   Entity entity;
 
   entity.flip = SDL_FLIP_NONE;
-  entity.texture = texture;
   entity.position = (SDL_Rect) { x, y, w, h };
+  entity.texture = texture;
   entity.animation = createAnimation(entity.texture, w, h);
   
   return entity;
@@ -40,15 +38,11 @@ Entity createEntityTexture(SDL_Texture * texture, int x, int y, int w, int h) {
 
 void drawEntity(SDL_Renderer * renderer, Entity * entity) {
   SDL_RenderCopyEx(renderer, entity->texture, &entity->animation.frame, &entity->position, 0, NULL, entity->flip);
+  
   #ifdef DEBUG
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderDrawRect(renderer, &entity->position);
   #endif
-}
-
-void destroyEntity(Entity * entity) {
-  SDL_DestroyTexture(entity->texture);
-  entity->texture = NULL;
 }
 
 int checkEntityCollision(Entity * e1, Entity * e2) {
@@ -62,6 +56,6 @@ int checkEntityAndRectCollision(Entity * e, SDL_Rect * r) {
 }
 
 int checkEntityAndPointCollision(Entity * e, SDL_Point * p) {
-  return (e->position.x + e->position.w >= p->x && e->position.x <= p->x + 1) &&
-         (e->position.y + e->position.h >= p->y && e->position.y <= p->y + 1);
+  return (e->position.x + e->position.w >= p->x && e->position.x <= p->x) &&
+         (e->position.y + e->position.h >= p->y && e->position.y <= p->y);
 }

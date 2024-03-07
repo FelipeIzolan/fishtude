@@ -27,10 +27,12 @@ Sprite createSprite(SDL_Renderer * renderer, char * src, int x, int y, int w, in
   if (h == 0) sprite.position.h = th;
   else sprite.position.h = h;
 
-  sprite.frame.x = 0;
-  sprite.frame.y = 0;
-  sprite.frame.w = sprite.position.w;
-  sprite.frame.h = sprite.position.h;
+  sprite.frame = (SDL_Rect) { 
+    0, 
+    0,
+    sprite.position.w,
+    sprite.position.h
+  };
   
   return sprite;
 }
@@ -51,11 +53,13 @@ Sprite createSpriteTexture(SDL_Texture * texture, int x, int y, int w, int h) {
   if (h == 0) sprite.position.h = th;
   else sprite.position.h = h;
 
-  sprite.frame.x = 0;
-  sprite.frame.y = 0;
-  sprite.frame.w = sprite.position.w;
-  sprite.frame.h = sprite.position.h;
-  
+  sprite.frame = (SDL_Rect) { 
+    0, 
+    0,
+    sprite.position.w,
+    sprite.position.h
+  };
+ 
   return sprite;
 }
 
@@ -71,9 +75,4 @@ void setSpriteFramePosition(Sprite * sprite, int x, int y) {
 
 void drawSprite(SDL_Renderer * renderer, Sprite * sprite) {
   SDL_RenderCopy(renderer, sprite->texture, &sprite->frame, &sprite->position);
-}
-
-void destroySprite(Sprite * sprite) {
-  SDL_DestroyTexture(sprite->texture);
-  sprite->texture = NULL;
 }

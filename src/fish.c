@@ -91,7 +91,6 @@ void updateFish(Fish * fish, Player * player, Fishing * fishing, Fish * vector, 
         break;
       case FISH_WAVE_BACK: 
         fish->entity.position.y = calcSineWave(&fish->movement.wave, fish->entity.position.x);
-
         if (fish->entity.position.x == fish->movement.back)
           fish->entity.flip = fish->entity.flip == SDL_FLIP_HORIZONTAL ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
         break;
@@ -108,5 +107,5 @@ void updateFish(Fish * fish, Player * player, Fishing * fishing, Fish * vector, 
       player->gold += fish->gold;
       cvector_erase(vector, index);
     }
-  } 
+  }
 }

@@ -13,6 +13,11 @@ SDL_Texture * createTexture(SDL_Renderer * renderer, char * src) {
   return texture;
 }
 
+void destroyTexture(SDL_Texture * texture) {
+  SDL_DestroyTexture(texture);
+  texture = NULL;
+}
+
 // --------------------
 
 typedef struct OscillateRange {

@@ -24,8 +24,8 @@ Node * NodeNew(void * data, int cq) {
 Node * NodeNewChild(Node * node, void * data, int cq) {
   Node * c = malloc(sizeof(Node));
   
+  node->children[node->length] = c;
   node->length++;
-  node->children[node->length - 1] = c;
 
   c->data = data;
   c->parent = node;
@@ -34,9 +34,9 @@ Node * NodeNewChild(Node * node, void * data, int cq) {
   return c;
 }
 
-void TreeFree(Node * node) {
+void NodeFree(Node * node) {
   for (int i = 0; i < node->length; i++)
-    TreeFree(node->children[i]);
+    NodeFree(node->children[i]);
 
   free(node->data);
   node->data = NULL;

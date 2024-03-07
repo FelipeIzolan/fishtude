@@ -1,55 +1,62 @@
 #pragma once
 
 #include <math.h>
+#include <sys/types.h>
 
 #include <SDL_render.h>
 #include <SDL_rect.h>
 
+#include "SDL_timer.h"
 #include "math.c"
 
 typedef struct Animation {
   SDL_Rect frame;
   float time;
-  float multiplier;
-  int row;
-  int max_row;
-  int max_column;
+  ushort fy; // frame-y (NO ZERO-BASED INDEXING)
+  ushort fc; // frame-count
+  ushort fr; // frame-rate
 } Animation;
 
-Animation createAnimation(SDL_Texture * texture, int w, int h) {
+Animation createAnimation(SDL_Texture * texture, int fw, int fh) {
   Animation animation;
   int tw, th;
 
   SDL_QueryTexture(texture, NULL, NULL, &tw, &th);
-  
-  animation.frame = (SDL_Rect) { 0, 0, w, h };
-  animation.max_column = tw / w;
-  animation.max_row = th / h;
+
+  animation = (Animation) {
+    (SDL_Rect) { 0, 0, fw, fh },
+    0,
+    1,
+    0,
+    8
+  };
 
   return animation;
 }
 
-void setAnimation(Animation * animation, int row, int max_column, float multiplier) {
-  if (animation->row == row) return;
+void setAnimation(Animation * animation, int fy, int fc, int fr) {
+  if (animation->fy == fy) return;
 
   animation->time = 0;
-  animation->row = row;
-  animation->max_column = max_column;
-  animation->multiplier = multiplier;
+  animation->fy = fy;
+  animation->fc = fc;
+  animation->fr = fr;
 
   animation->frame.x = 0;
-  animation->frame.y = (row >= animation->max_row ? animation->max_row - 1 : row - 1) * animation->frame.h;
+  animation->frame.y = (fy - 1) * animation->frame.h;
 }
 
-void setFrameAnimation(Animation * animation, int column, int row) {
-  animation->max_column = 0;
-  animation->frame.x = (column - 1) * animation->frame.w;
-  animation->frame.y = (row >= animation->max_row ? animation->max_row - 1 : row - 1) * animation->frame.h;
+void setFrameAnimation(Animation * animation, int fx, int fy) {
+  animation->fc = 0;
+  animation->fy = fy - 1;
+
+  animation->frame.x = (fx - 1) * animation->frame.w;
+  animation->frame.y = (fy - 1) * animation->frame.h;
 }
 
 void updateAnimation(Animation * animation) {
-  if (animation->max_column > 0) {
-    animation->time = ICLAMP(animation->time + DELTA * animation->multiplier, 0, animation->max_column);
+  if (animation->fc > 0) {
+    animation->time = ICLAMP(animation->time + ((float)animation->fr / 100), 0, animation->fc);
     animation->frame.x = floorf(animation->time) * animation->frame.w;
   }
 }

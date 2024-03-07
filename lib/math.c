@@ -5,7 +5,6 @@
 
 #define WINDOW_WIDTH 160
 #define WINDOW_HEIGHT 144
-#define DELTA 0.03333
 
 #define LERP(s, e, w) (s + (e-s) * w)
 #define MIN(v, min) (v < min ? min : v)

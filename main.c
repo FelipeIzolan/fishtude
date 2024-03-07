@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include <SDL.h>
 #include <SDL_timer.h>
@@ -13,20 +14,19 @@
 #include <SDL_stdinc.h>
 #include <SDL_keycode.h>
 
-#include "lib/cvector.h"
-#include "lib/sprite.c"
-#include "lib/entity.c"
-#include "lib/number.c"
 #include "lib/tree.c"
-#include "lib/utils.c"
 #include "lib/math.c"
+#include "lib/utils.c"
+#include "lib/number.c"
+#include "lib/entity.c"
+#include "lib/sprite.c"
+#include "lib/cvector.h"
 
-#include "src/passive.c"
-#include "src/fishing.c"
-#include "src/player.c"
-#include "src/cloud.c"
 #include "src/fish.c"
-
+#include "src/cloud.c"
+#include "src/player.c"
+#include "src/fishing.c"
+#include "src/skill_tree.c"
 
 enum { GAME, SKILL_TREE };
 
@@ -35,19 +35,21 @@ void error() {
   exit(EXIT_FAILURE);
 }
 
-void framerate(int start) {
-  static int s;
-
+void cap(int start) {
+  static uint64_t s;
+  
   if (start) {
-    s = SDL_GetTicks();
+    s = SDL_GetPerformanceCounter();
   } else {
-    int e = SDL_GetTicks() - s;
-    int dd = DELTA * 1000;
-    if (e < dd) SDL_Delay(dd - e);
+    uint64_t e = SDL_GetPerformanceCounter();
+    float el = (e - s) / (float)SDL_GetPerformanceFrequency() * 1000;
+    SDL_Delay(33.333333 - el); // 30 FPS
   }
 }
 
 int main() {
+  // -- SDL ------------------------------------------------------------------
+  srand(time(NULL));
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) error();
 
   SDL_Window * window = SDL_CreateWindow(
@@ -64,32 +66,32 @@ int main() {
   SDL_Renderer * renderer = SDL_CreateRenderer(
       window,
       -1,
-      SDL_RENDERER_ACCELERATED |
-      SDL_RENDERER_PRESENTVSYNC
+      SDL_RENDERER_ACCELERATED 
   );
   if (renderer == NULL) error();
 
-  srand(time(NULL));
   SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
   SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-  
+  // -------------------------------------------------------------------------
+
   SDL_Texture * fish_texture = createTexture(renderer, "./assets/fish.bmp");
   SDL_Texture * cloud_texture = createTexture(renderer, "./assets/clouds.bmp");
   SDL_Texture * passive_texture = createTexture(renderer, "./assets/passives.bmp");
 
+  int scene = GAME;
+  Node * skill_tree = createSkillTree(passive_texture);
+
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
+  SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
+  
   Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 2, 124, 0, 0);
   Sprite ui_z = createSprite(renderer, "./assets/ui_z.bmp", 16, 123, 0, 0);
   Sprite coin = createSprite(renderer, "./assets/coin.bmp", 2, 2, 4, 6);
   Number number = { 5, 6, createTexture(renderer, "./assets/number.bmp") };
-  SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
 
   Sprite cloud[8];
   createCloud(cloud, cloud_texture);
-
-  int scene = GAME;
-  Node * root = createTree(passive_texture);
 
   Player player = { 
     PLAYER_DEFAULT, 
@@ -105,13 +107,18 @@ int main() {
     createSprite(renderer, "./assets/fishing_mechanic.bmp", 0, 0, 0, 0),
     createSprite(renderer, "./assets/fishing_pointer.bmp", 0, 0, 0, 0)
   };
+
+  PassivePointer pointer = {
+    skill_tree,
+    createSprite(renderer, "./assets/passive_pointer.bmp", 0, 0, 0, 0)
+  };
   
   cvector_vector_type(Fish) fish = NULL;
   float fish_time = 0;
 
   // Game-Loop
   while (1) { 
-    framerate(1);
+    cap(1);
 
     SDL_Event event;
     const Uint8* keyboard = SDL_GetKeyboardState(NULL);
@@ -121,10 +128,15 @@ int main() {
         case SDL_QUIT: goto game_free;
         case SDL_KEYDOWN:
           if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; 
-          if (event.key.keysym.sym == SDLK_z) scene = scene == GAME ? SKILL_TREE : GAME;
+          if (event.key.keysym.sym == SDLK_z) {
+            scene = scene == GAME ? SKILL_TREE : GAME;
+            if (scene == SKILL_TREE) {
+              pointer.sprite.position.x = ((Passive *) skill_tree->data)->sprite.position.x - 2;
+              pointer.sprite.position.y = ((Passive *) skill_tree->data)->sprite.position.y - 2;
+            } 
+          }
           
           if (scene == GAME) {
-
             if (event.key.keysym.sym == SDLK_x && player.state != PLAYER_BACK) {
               player.state = player.state == PLAYER_DEFAULT ? PLAYER_MECHANIC : 
                              player.state == PLAYER_MECHANIC ? PLAYER_FISHING : 
@@ -133,9 +145,8 @@ int main() {
               if (player.state == PLAYER_MECHANIC) setPreFishing(&fishing, &player);
               if (player.state == PLAYER_FISHING) setFishing(&fishing);
             }
-
-
           }
+
         break;
       }
     }
@@ -144,7 +155,7 @@ int main() {
 
     if (scene == GAME) {
       // ------ Update
-      fish_time -= DELTA;
+      fish_time -= 0.033;
       updatePlayer(keyboard, &player);
       updateFishing(&fishing, &player);
       for (int i = 0; i < cvector_size(fish); i++) updateFish(&fish[i], &player, &fishing, fish, i); 
@@ -186,36 +197,39 @@ int main() {
       SDL_SetRenderDrawColor(renderer, 69, 40, 60, 255);
       SDL_RenderFillRect(renderer, &background.position);
       SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-      drawTree(renderer, root);
+      drawSkillTree(renderer, skill_tree);
+      drawSprite(renderer, &pointer.sprite);
     }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderPresent(renderer);
 
-    framerate(0);
+    cap(0);
   }
 
   // Free
   game_free:
 
-  destroyEntity(&player.entity);
+  destroyTexture(player.entity.texture);
 
-  destroySprite(&background);
-  destroySprite(&ui_x);
-
-  destroySprite(&fishing.frame);
-  destroySprite(&fishing.pointer);
+  destroyTexture(ui_x.texture);
+  destroyTexture(ui_z.texture);
+  destroyTexture(coin.texture);
+  destroyTexture(number.texture);
+  destroyTexture(background.texture);
   
-  SDL_DestroyTexture(number.texture);
+  destroyTexture(fishing.pointer.texture);
+  destroyTexture(fishing.frame.texture);
+  destroyTexture(pointer.sprite.texture);
 
-  SDL_DestroyTexture(cloud_texture);
-  SDL_DestroyTexture(fish_texture);
-  SDL_DestroyTexture(passive_texture);
+  destroyTexture(fish_texture);
+  destroyTexture(cloud_texture);
+  destroyTexture(passive_texture);
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
 
-  TreeFree(root);
+  NodeFree(skill_tree);
   cvector_free(fish);
 
   SDL_Quit();

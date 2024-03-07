@@ -8,12 +8,6 @@
 #include "../lib/tree.c"
 #include "../lib/sprite.c"
 
-typedef struct Passive {
-  int id;
-  uint active: 1;
-  Sprite sprite;
-} Passive;
-
 enum passive_id {
   YELLOW,
   BLUE,
@@ -23,6 +17,16 @@ enum passive_id {
   SYELLOW
 };
 
+typedef struct Passive {
+  int id;
+  uint active: 1;
+  Sprite sprite;
+} Passive;
+
+typedef struct PassivePointer {
+  Node * node;
+  Sprite sprite;
+} PassivePointer;
 
 Passive * createPassive(SDL_Texture * texture, Passive * pp, int id, double r, int m) {
   Passive * p = malloc(sizeof(Passive));
@@ -43,7 +47,7 @@ Passive * createPassive(SDL_Texture * texture, Passive * pp, int id, double r, i
   return p;
 }
 
-Node * createTree(SDL_Texture * texture) {
+Node * createSkillTree(SDL_Texture * texture) {
   Passive * p = malloc(sizeof(Passive));
 
   p->id = 1;
@@ -64,7 +68,7 @@ Node * createTree(SDL_Texture * texture) {
   return root;
 }
 
-void drawTree(SDL_Renderer * renderer, Node * node) {
+void drawSkillTree(SDL_Renderer * renderer, Node * node) {
   Passive * p = ((Passive *)node->data);
 
   for (int i = 0; i < node->length; i++) {
@@ -80,7 +84,7 @@ void drawTree(SDL_Renderer * renderer, Node * node) {
       ((Passive *)node->children[i]->data)->sprite.position.y + 6
     );
 
-    drawTree(renderer, node->children[i]);
+    drawSkillTree(renderer, node->children[i]);
   }
 
   if (p->active) SDL_SetTextureColorMod(p->sprite.texture, 255, 255, 255);

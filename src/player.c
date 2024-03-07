@@ -23,8 +23,8 @@ void updatePlayer(const Uint8 * keyboard, Player * player) {
     if (keyboard[SDL_SCANCODE_RIGHT]) player->entity.position.x += 1;
     if (keyboard[SDL_SCANCODE_LEFT]) player->entity.position.x -= 1;
     
-    if (keyboard[SDL_SCANCODE_LEFT] || keyboard[SDL_SCANCODE_RIGHT]) setAnimation(&player->entity.animation, 2, 2, 4);
-    else setAnimation(&player->entity.animation, 1, 4, 4);
+    if (keyboard[SDL_SCANCODE_LEFT] || keyboard[SDL_SCANCODE_RIGHT]) setAnimation(&player->entity.animation, 2, 2, 12);
+    else setAnimation(&player->entity.animation, 1, 4, 12);
   
     player->entity.position.x = CLAMP(player->entity.position.x, 0, 144);
   }
