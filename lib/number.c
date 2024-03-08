@@ -19,70 +19,70 @@ void drawNumber(SDL_Renderer * renderer, Number * number, uint v, int x, int y) 
 
   for (int i = 0; i < strlen(n); i++) {
     switch (n[i]) {
-      case 48: 
+      case '0': 
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { 0, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 49:
+      case '1':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 50:
+      case '2':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 2, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 51:
+      case '3':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 3, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 52:
+      case '4':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 4, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 53:
+      case '5':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 5, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 54:
+      case '6':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 6, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 55:
+      case '7':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 7, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 56:
+      case '8':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 8, 0, number->w, number->h }, 
                        &(SDL_Rect) { x + i * number->w, y, number->w, number->h }
                       );
       break;
-      case 57:
+      case '9':
         SDL_RenderCopy(renderer, 
                        number->texture, 
                        &(SDL_Rect) { number->w * 9, 0, number->w, number->h }, 

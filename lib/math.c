@@ -1,7 +1,9 @@
 #pragma once
 
-#include <SDL_rect.h>
+#include <math.h>
 #include <stdlib.h>
+
+#include <SDL_rect.h>
 
 #define WINDOW_WIDTH 160
 #define WINDOW_HEIGHT 144
@@ -20,6 +22,10 @@ SDL_Point quadraticBezierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, float w
   float y1 = LERP(p2.y, p3.y, w);
     
   return (SDL_Point) { LERP(x0, x1, w),LERP(y0, y1, w) };
+}
+
+int distance(int x1, int y1, int x2, int y2) {
+  return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 
 SDL_Point cubicBenzierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, SDL_Point p4, float w) {

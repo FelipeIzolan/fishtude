@@ -5,7 +5,7 @@
 
 typedef struct Node {
   void * data;
-  uint length;
+  size_t size;
   struct Node * parent;
   struct Node ** children;
 } Node;
@@ -16,7 +16,7 @@ Node * NodeNew(void * data, int cq) {
   n->data = data;
   n->children = malloc(sizeof(Node) * cq);
   n->parent = NULL;
-  n->length = 0;
+  n->size = 0;
 
   return n;
 }
@@ -24,8 +24,8 @@ Node * NodeNew(void * data, int cq) {
 Node * NodeNewChild(Node * node, void * data, int cq) {
   Node * c = malloc(sizeof(Node));
   
-  node->children[node->length] = c;
-  node->length++;
+  node->children[node->size] = c;
+  node->size++;
 
   c->data = data;
   c->parent = node;
@@ -35,7 +35,7 @@ Node * NodeNewChild(Node * node, void * data, int cq) {
 }
 
 void NodeFree(Node * node) {
-  for (int i = 0; i < node->length; i++)
+  for (int i = 0; i < node->size; i++)
     NodeFree(node->children[i]);
 
   free(node->data);

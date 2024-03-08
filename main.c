@@ -14,7 +14,6 @@
 #include <SDL_stdinc.h>
 #include <SDL_keycode.h>
 
-#include "lib/tree.c"
 #include "lib/math.c"
 #include "lib/utils.c"
 #include "lib/number.c"
@@ -26,7 +25,7 @@
 #include "src/cloud.c"
 #include "src/player.c"
 #include "src/fishing.c"
-#include "src/skill_tree.c"
+#include "src/passive.c"
 
 enum { GAME, SKILL_TREE };
 
@@ -43,7 +42,7 @@ void cap(int start) {
   } else {
     uint64_t e = SDL_GetPerformanceCounter();
     float el = (e - s) / (float)SDL_GetPerformanceFrequency() * 1000;
-    SDL_Delay(33.333333 - el); // 30 FPS
+    SDL_Delay(33.33333 - el); // 30 FPS
   }
 }
 
@@ -80,7 +79,6 @@ int main() {
   SDL_Texture * passive_texture = createTexture(renderer, "./assets/passives.bmp");
 
   int scene = GAME;
-  Node * skill_tree = createSkillTree(passive_texture);
 
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
   SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
@@ -93,6 +91,8 @@ int main() {
   Sprite cloud[8];
   createCloud(cloud, cloud_texture);
 
+  PassiveTree passiveTree = createPassiveTree(renderer, passive_texture);
+  
   Player player = { 
     PLAYER_DEFAULT, 
     0, 
@@ -108,10 +108,6 @@ int main() {
     createSprite(renderer, "./assets/fishing_pointer.bmp", 0, 0, 0, 0)
   };
 
-  PassivePointer pointer = {
-    skill_tree,
-    createSprite(renderer, "./assets/passive_pointer.bmp", 0, 0, 0, 0)
-  };
   
   cvector_vector_type(Fish) fish = NULL;
   float fish_time = 0;
@@ -128,14 +124,8 @@ int main() {
         case SDL_QUIT: goto game_free;
         case SDL_KEYDOWN:
           if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; 
-          if (event.key.keysym.sym == SDLK_z) {
-            scene = scene == GAME ? SKILL_TREE : GAME;
-            if (scene == SKILL_TREE) {
-              pointer.sprite.position.x = ((Passive *) skill_tree->data)->sprite.position.x - 2;
-              pointer.sprite.position.y = ((Passive *) skill_tree->data)->sprite.position.y - 2;
-            } 
-          }
-          
+          if (event.key.keysym.sym == SDLK_z) scene = scene == GAME ? SKILL_TREE : GAME;
+           
           if (scene == GAME) {
             if (event.key.keysym.sym == SDLK_x && player.state != PLAYER_BACK) {
               player.state = player.state == PLAYER_DEFAULT ? PLAYER_MECHANIC : 
@@ -145,6 +135,13 @@ int main() {
               if (player.state == PLAYER_MECHANIC) setPreFishing(&fishing, &player);
               if (player.state == PLAYER_FISHING) setFishing(&fishing);
             }
+          }
+
+          if (scene == SKILL_TREE) {
+            if (event.key.keysym.sym == SDLK_UP) updatePassiveTreeSelect(&passiveTree, 'U');
+            if (event.key.keysym.sym == SDLK_DOWN) updatePassiveTreeSelect(&passiveTree, 'D');
+            if (event.key.keysym.sym == SDLK_LEFT) updatePassiveTreeSelect(&passiveTree, 'L');
+            if (event.key.keysym.sym == SDLK_RIGHT) updatePassiveTreeSelect(&passiveTree, 'R'); 
           }
 
         break;
@@ -197,8 +194,8 @@ int main() {
       SDL_SetRenderDrawColor(renderer, 69, 40, 60, 255);
       SDL_RenderFillRect(renderer, &background.position);
       SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-      drawSkillTree(renderer, skill_tree);
-      drawSprite(renderer, &pointer.sprite);
+      drawPassiveTree(renderer, &passiveTree);
+      drawSprite(renderer, &passiveTree.pointer);
     }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -220,7 +217,7 @@ int main() {
   
   destroyTexture(fishing.pointer.texture);
   destroyTexture(fishing.frame.texture);
-  destroyTexture(pointer.sprite.texture);
+  destroyTexture(passiveTree.pointer.texture);
 
   destroyTexture(fish_texture);
   destroyTexture(cloud_texture);
@@ -229,7 +226,7 @@ int main() {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
 
-  NodeFree(skill_tree);
+  NodeFree(passiveTree.root);
   cvector_free(fish);
 
   SDL_Quit();
