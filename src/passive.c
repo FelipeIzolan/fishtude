@@ -4,36 +4,49 @@
 
 enum passive_id {
   YELLOW,
-  BLUE,
-  GREEN,
-  PURPLE,
   RED,
+  GREEN,
+  BLUE,
+  PURPLE,
   SYELLOW
 };
 
 typedef struct Passive {
-  int id;
+  uint id;
   uint active: 1;
   Sprite sprite;
+  SDL_Point base;
 } Passive;
 
-Passive * createPassive(SDL_Texture * texture, Passive * parent, int id, double r, int m) {
+Passive * createPassive(SDL_Texture * texture, Passive * parent, int id, double r) {
   Passive * p = malloc(sizeof(Passive));
   
   int x = parent->sprite.position.x;
   int y = parent->sprite.position.y;
+  int m = id < SYELLOW ? 0 : 1;
 
   p->id = id;
   p->active = 0;
   p->sprite = id < SYELLOW ? 
-    createSpriteTexture(texture, x + cos(r) * m, y + sin(r) * m, 12, 12) : 
-    createSpriteTexture(texture, x + cos(r) * m, y + sin(r) * m, 14, 14);
+    createSpriteTexture(texture, x - m + cos(r) * 24, y - m + sin(r) * 24, 12, 12) : 
+    createSpriteTexture(texture, x - m + cos(r) * 24, y - m + sin(r) * 24, 14, 14);  
+  p->base = (SDL_Point) { p->sprite.position.x, p->sprite.position.y };
 
   id < SYELLOW ? 
   setSpriteFrame(&p->sprite, p->id + 1, 1):
   setSpriteFramePosition(&p->sprite, (id - SYELLOW) * 14, 12);
 
   return p;
+}
+
+void updatePassive(SDL_Rect * camera, Node * node) {
+  Passive * p = ((Passive *)node->data);
+
+  for (size_t i = 0; i < node->size; i++)
+    updatePassive(camera, node->children[i]);
+
+  p->sprite.position.x = p->base.x - camera->x;
+  p->sprite.position.y = p->base.y - camera->y;
 }
 
 void drawPassive(SDL_Renderer * renderer, Node * node) {
@@ -119,17 +132,11 @@ PassiveTree createPassiveTree(SDL_Renderer * renderer, SDL_Texture * texture) {
   p->id = 1;
   p->active = 0;
   p->sprite = createSpriteTexture(texture, 74, 66, 12, 12);
+  p->base = (SDL_Point) { p->sprite.position.x, p->sprite.position.y };
 
-  Node * root = NodeNew(p, 4);
-  Node * s1 = NodeNewChild(root, createPassive(texture, ((Passive *)root->data), SYELLOW, 3 * M_PI / 2, 18), 2);
+  Node * root = NodeNew(p, 3);
+  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), SYELLOW, 3 * M_PI / 2), 2);
 
-  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), BLUE, 2 * M_PI, 18), 0);
-  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), GREEN, M_PI, 18), 0);
-  NodeNewChild(root, createPassive(texture, ((Passive *)root->data), PURPLE, M_PI / 2, 18), 0);
-
-  NodeNewChild(s1, createPassive(texture, ((Passive *)s1->data), YELLOW, (4 * M_PI) / 3, 18), 0);
-  NodeNewChild(s1, createPassive(texture, ((Passive *)s1->data), YELLOW, (5 * M_PI) / 3, 18), 0);
-  
   PassiveTree passiveTree = {
     root,
     root,
@@ -139,17 +146,18 @@ PassiveTree createPassiveTree(SDL_Renderer * renderer, SDL_Texture * texture) {
   return passiveTree;
 }
 
-void drawPassiveTree(SDL_Renderer * renderer, PassiveTree * pt) {
-  drawPassive(renderer, pt->root);
-}
-
-void updatePassiveTreeSelect(PassiveTree * passiveTree, char dir) {
+void updatePassiveTreeSelect(PassiveTree * passiveTree, SDL_Rect * camera, char dir) {
   passiveTree->selected = getNearestPassive(passiveTree->selected, dir);
   
   Passive * sp = (Passive *) passiveTree->selected->data;
-  int d = sp->id < SYELLOW ? 2 : 1;
+  int m = sp->id < SYELLOW ? 2 : 1;
+  
+  camera->x = (sp->base.x + sp->sprite.frame.w / 2) - camera->w / 2;
+  camera->y = (sp->base.y + sp->sprite.frame.h / 2) - camera->h / 2;
+  
+  passiveTree->pointer.position.x = (sp->base.x - m) - camera->x;
+  passiveTree->pointer.position.y = (sp->base.y - m) - camera->y;
 
-  passiveTree->pointer.position.x = sp->sprite.position.x - d;
-  passiveTree->pointer.position.y = sp->sprite.position.y - d;
+  updatePassive(camera, passiveTree->root);
 }
 

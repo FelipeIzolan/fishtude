@@ -71,7 +71,7 @@ Fish createFish(SDL_Texture * texture) {
   
   fish.gold = calcFishGold(&fish);
 
-  setFrameAnimation(&fish.entity.animation, rrandom(1, 16), 1);
+  setFrameAnimation(&fish.entity.animation, rrandom(1, 16), rrandom(1, 2));
   return fish;
 }
 

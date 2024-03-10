@@ -91,6 +91,7 @@ int main() {
   Sprite cloud[8];
   createCloud(cloud, cloud_texture);
 
+  SDL_Rect passiveTreeCamera = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
   PassiveTree passiveTree = createPassiveTree(renderer, passive_texture);
   
   Player player = { 
@@ -138,10 +139,10 @@ int main() {
           }
 
           if (scene == SKILL_TREE) {
-            if (event.key.keysym.sym == SDLK_UP) updatePassiveTreeSelect(&passiveTree, 'U');
-            if (event.key.keysym.sym == SDLK_DOWN) updatePassiveTreeSelect(&passiveTree, 'D');
-            if (event.key.keysym.sym == SDLK_LEFT) updatePassiveTreeSelect(&passiveTree, 'L');
-            if (event.key.keysym.sym == SDLK_RIGHT) updatePassiveTreeSelect(&passiveTree, 'R'); 
+            if (event.key.keysym.sym == SDLK_UP)    updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'U');
+            if (event.key.keysym.sym == SDLK_DOWN)  updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'D');
+            if (event.key.keysym.sym == SDLK_LEFT)  updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'L');
+            if (event.key.keysym.sym == SDLK_RIGHT) updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'R'); 
           }
 
         break;
@@ -179,7 +180,7 @@ int main() {
       drawFishingLine(renderer, &fishing, &player);
       for (int i = 0; i < cvector_size(fish); i++) drawEntity(renderer, &fish[i].entity); 
 
-      SDL_SetRenderDrawColor(renderer, 15, 94, 156, 75);
+      SDL_SetRenderDrawColor(renderer, 15, 94, 156, 40);
       SDL_RenderFillRect(renderer, &water);
 
       drawFishingInterface(renderer, &fishing, &player);
@@ -194,7 +195,7 @@ int main() {
       SDL_SetRenderDrawColor(renderer, 69, 40, 60, 255);
       SDL_RenderFillRect(renderer, &background.position);
       SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-      drawPassiveTree(renderer, &passiveTree);
+      drawPassive(renderer, passiveTree.root);
       drawSprite(renderer, &passiveTree.pointer);
     }
 

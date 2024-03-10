@@ -11,10 +11,10 @@ typedef struct Node {
 } Node;
 
 Node * NodeNew(void * data, int cq) {
-  Node * n = malloc(sizeof(Node));
+  Node * n = malloc(sizeof(struct Node));
   
   n->data = data;
-  n->children = malloc(sizeof(Node) * cq);
+  n->children = malloc(cq * sizeof(struct Node *));
   n->parent = NULL;
   n->size = 0;
 
@@ -22,14 +22,15 @@ Node * NodeNew(void * data, int cq) {
 }
 
 Node * NodeNewChild(Node * node, void * data, int cq) {
-  Node * c = malloc(sizeof(Node));
+  Node * c = malloc(sizeof(struct Node));
   
-  node->children[node->size] = c;
-  node->size++;
-
   c->data = data;
   c->parent = node;
-  c->children = malloc(sizeof(Node) * cq);
+  c->children = malloc(cq * sizeof(struct Node *));
+  c->size = 0;
+
+  node->children[node->size] = c;
+  node->size++;
 
   return c;
 }
