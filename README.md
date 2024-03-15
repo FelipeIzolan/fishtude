@@ -1,7 +1,7 @@
 # Fishtude 🐟
 
-<img src='https://github.com/FelipeIzolan/fishtude/assets/80170121/0d578ddd-105e-4be2-a0be-a31d7889f284' width=420 />
-<img src='https://github.com/FelipeIzolan/fishtude/assets/80170121/1e1309a3-a293-479c-9c26-626c329709ab' width=420 />
+<img src='https://github.com/FelipeIzolan/fishtude/assets/80170121/0d578ddd-105e-4be2-a0be-a31d7889f284' width=360 />
+<img src='https://github.com/FelipeIzolan/fishtude/assets/80170121/1e1309a3-a293-479c-9c26-626c329709ab' width=360 />
 
 ## Development 👨‍💻
 
