@@ -45,14 +45,14 @@ void updateFishing(Fishing * fishing, Player * player) {
   }
 
   if (player->state == PLAYER_FISHING) {
-    fishing->end.y = fishing->end.y + 2;
+    fishing->end.y += 2;
     updateOscillateRange(&fishing->control);
 
     if (fishing->end.y >= fishing->start.y + fishing->force.current) player->state = PLAYER_BACK;
   }
 
   if (player->state == PLAYER_BACK) {
-    fishing->end.y = fishing->end.y - 2;
+    fishing->end.y -= 2;
 
     if (fishing->end.y <= fishing->start.y) player->state = PLAYER_DEFAULT;  
   }

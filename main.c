@@ -55,8 +55,8 @@ int main() {
       "fishtude", 
       SDL_WINDOWPOS_CENTERED,
       SDL_WINDOWPOS_CENTERED,
-      WINDOW_WIDTH,
-      WINDOW_HEIGHT,
+      GAME_WIDTH,
+      GAME_HEIGHT,
       SDL_WINDOW_FULLSCREEN_DESKTOP |
       SDL_WINDOW_BORDERLESS
   );
@@ -69,7 +69,7 @@ int main() {
   );
   if (renderer == NULL) error();
 
-  SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+  SDL_RenderSetLogicalSize(renderer, GAME_WIDTH, GAME_HEIGHT);
   SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
   // -------------------------------------------------------------------------
@@ -81,23 +81,23 @@ int main() {
   int scene = GAME;
 
   Sprite background = createSprite(renderer, "./assets/background.bmp", 0, 0, 0, 0);
-  SDL_Rect water = { 0, 36, WINDOW_WIDTH, WINDOW_HEIGHT}; 
+  SDL_Rect water = { 0, 36, GAME_WIDTH, GAME_HEIGHT}; 
   
-  Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 2, 124, 0, 0);
-  Sprite ui_z = createSprite(renderer, "./assets/ui_z.bmp", 16, 123, 0, 0);
+  Sprite ui_x = createSprite(renderer, "./assets/ui_x.bmp", 18, 124, 0, 0);
+  Sprite ui_z = createSprite(renderer, "./assets/ui_z.bmp", 2, 123, 0, 0);
   Sprite coin = createSprite(renderer, "./assets/coin.bmp", 2, 2, 4, 6);
   Number number = { 5, 6, createTexture(renderer, "./assets/number.bmp") };
 
   Sprite cloud[8];
   createCloud(cloud, cloud_texture);
 
-  SDL_Rect passiveTreeCamera = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
   PassiveTree passiveTree = createPassiveTree(renderer, passive_texture);
   
   Player player = { 
     PLAYER_DEFAULT, 
-    0, 
-    createEntity(renderer, "./assets/player.bmp", 0, 24, 16, 16) 
+    309,
+    createEntity(renderer, "./assets/player.bmp", 0, 24, 16, 16),
+    { 0, 1, 1, 0, 0, 1 }
   };
 
   Fishing fishing = {
@@ -108,10 +108,10 @@ int main() {
     createSprite(renderer, "./assets/fishing_mechanic.bmp", 0, 0, 0, 0),
     createSprite(renderer, "./assets/fishing_pointer.bmp", 0, 0, 0, 0)
   };
-
-  
-  cvector_vector_type(Fish) fish = NULL;
-  float fish_time = 0;
+ 
+  cvector_vector_type(Fish) fish = NULL; 
+  float fish_spawn_time = 0;
+  float gold_income_time = 10;
 
   // Game-Loop
   while (1) { 
@@ -139,10 +139,11 @@ int main() {
           }
 
           if (scene == SKILL_TREE) {
-            if (event.key.keysym.sym == SDLK_UP)    updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'U');
-            if (event.key.keysym.sym == SDLK_DOWN)  updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'D');
-            if (event.key.keysym.sym == SDLK_LEFT)  updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'L');
-            if (event.key.keysym.sym == SDLK_RIGHT) updatePassiveTreeSelect(&passiveTree, &passiveTreeCamera, 'R'); 
+            if (event.key.keysym.sym == SDLK_UP)    updatePassiveTreeSelect(&passiveTree, 'U');
+            if (event.key.keysym.sym == SDLK_DOWN)  updatePassiveTreeSelect(&passiveTree, 'D');
+            if (event.key.keysym.sym == SDLK_LEFT)  updatePassiveTreeSelect(&passiveTree, 'L');
+            if (event.key.keysym.sym == SDLK_RIGHT) updatePassiveTreeSelect(&passiveTree, 'R');
+            if (event.key.keysym.sym == SDLK_x)     activePassiveTreeSelect(&passiveTree, &player);
           }
 
         break;
@@ -153,20 +154,27 @@ int main() {
 
     if (scene == GAME) {
       // ------ Update
-      fish_time -= 0.033;
+      fish_spawn_time -= 0.03333;
+      gold_income_time -= 0.03333;
       updatePlayer(keyboard, &player);
       updateFishing(&fishing, &player);
       for (int i = 0; i < cvector_size(fish); i++) updateFish(&fish[i], &player, &fishing, fish, i); 
       for (int i = 0; i < 8; i++) updateCloud(&cloud[i]);
       // ------
 
+      // ------ Gold Income
+      if (gold_income_time <= 0) {
+        player.gold += player.status.gold_passive_income;
+        gold_income_time = 10;
+      }
+      // ------
 
       // ------ Spawner
-      if (fish_time <= 0) {
-        for (int i = 0; i < 10; i++)
+      if (fish_spawn_time <= 0) {
+        for (int i = 0; i < 7 + rrandom(1, player.status.fish_spawn_quantity); i++)
           cvector_push_back(fish, createFish(fish_texture));
 
-        fish_time = 6;
+        fish_spawn_time = 16 - player.status.fish_spawn_time_decrease;
       }
       // ------
 
@@ -184,10 +192,6 @@ int main() {
       SDL_RenderFillRect(renderer, &water);
 
       drawFishingInterface(renderer, &fishing, &player);
-      drawSprite(renderer, &ui_x);
-      drawSprite(renderer, &ui_z);
-      drawSprite(renderer, &coin);
-      drawNumber(renderer, &number, player.gold, 7, 2);
       // ------
     }
 
@@ -199,6 +203,11 @@ int main() {
       drawSprite(renderer, &passiveTree.pointer);
     }
 
+    drawSprite(renderer, &ui_x);
+    drawSprite(renderer, &ui_z);
+    drawSprite(renderer, &coin);
+    drawNumber(renderer, &number, player.gold, 7, 2);
+    
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderPresent(renderer);
 
@@ -223,13 +232,12 @@ int main() {
   destroyTexture(fish_texture);
   destroyTexture(cloud_texture);
   destroyTexture(passive_texture);
-
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-
+  
   NodeFree(passiveTree.root);
   cvector_free(fish);
 
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
   SDL_Quit();
 
   return 1;

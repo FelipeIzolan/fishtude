@@ -6,7 +6,7 @@ void createCloud(Sprite * arr, SDL_Texture * texture) {
 
   for (int y = 1; y <= 2; y++) {
     for (int x = 1; x <= 4; x++) {
-      arr[i] = createSpriteTexture(texture, rrandom(-1600, WINDOW_WIDTH), rrandom(0, 12), 32, 16);
+      arr[i] = createSpriteTexture(texture, rrandom(-1600, GAME_WIDTH), rrandom(0, 12), 32, 16);
       setSpriteFrame(&arr[i], x, y);
       i++;
     }
@@ -16,7 +16,7 @@ void createCloud(Sprite * arr, SDL_Texture * texture) {
 void updateCloud(Sprite * sprite) {
   sprite->position.x += 1;
 
-  if (sprite->position.x >= WINDOW_WIDTH + 32) {
+  if (sprite->position.x >= GAME_WIDTH + 32) {
     sprite->position.x = rrandom(-1600, -32);
     sprite->position.y = rrandom(0, 12);
   }

@@ -9,7 +9,7 @@
 #include "player.c"
 #include <math.h>
 
-enum fish_state {
+enum FishState {
   FISH_DEFAULT,
   FISH_WAVE,
   FISH_BACK,
@@ -39,7 +39,7 @@ uint calcFishGold(Fish * fish) {
     case FISH_WAVE_BACK: v = 3; break;
   }
 
-  v += round((double)(fish->entity.position.y - 40) / 88 * 8);
+  v += round((double)(fish->entity.position.y - 40) / 88 * 10);
 
   return v;
 }
@@ -104,7 +104,7 @@ void updateFish(Fish * fish, Player * player, Fishing * fishing, Fish * vector, 
     fish->entity.position.y = fishing->end.y - 4;
 
     if (checkEntityCollision(&fish->entity, &player->entity)) {
-      player->gold += fish->gold;
+      player->gold += (fish->gold + player->status.fish_gold_base) * player->status.fish_gold_multiplier;
       cvector_erase(vector, index);
     }
   }

@@ -5,8 +5,8 @@
 
 #include <SDL_rect.h>
 
-#define WINDOW_WIDTH 160
-#define WINDOW_HEIGHT 144
+#define GAME_WIDTH 160
+#define GAME_HEIGHT 144
 
 #define LERP(s, e, w) (s + (e-s) * w)
 #define MIN(v, min) (v < min ? min : v)
