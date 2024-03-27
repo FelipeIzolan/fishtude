@@ -4,6 +4,7 @@
 
 #include "../lib/entity.c"
 #include "../lib/animation.c"
+#include "./passive/passive.c"
 
 enum PlayerState { 
   PLAYER_DEFAULT,
@@ -44,4 +45,24 @@ void updatePlayer(const Uint8 * keyboard, Player * player) {
   }
   
   updateAnimation(&player->entity.animation);
+}
+
+void applyToPlayerStatus(uint id, Player * player) {
+  PlayerStatus * status = &player->status;
+
+  switch (id) {
+    case YELLOW: status->fish_spawn_quantity += 2; break;
+    case BLUE: status->fish_spawn_time_decrease += 0.2; break;
+    case GREEN: status->fish_gold_base += 1; break;
+    case PURPLE: status->fish_gold_multiplier += 0.08; break;
+    case RED: status->gold_passive_income += 5; break;
+
+    case SYELLOW: status->fish_spawn_quantity += 5; status->fish_spawn_time_decrease += 0.1; break;
+    case SBLUE: status->fish_spawn_time_decrease += 0.5; status->fish_spawn_quantity += 1; break;
+    case SGREEN: status->fish_gold_base += 3; status->fish_gold_multiplier += 0.05; break;
+    case SPURPLE: status->fish_gold_multiplier += 0.1; status->fish_gold_base += 1; break;
+    case SRED: status->gold_passive_income += 12; break;
+  }
+
+  status->passive_price_multiplier += 0.05;
 }

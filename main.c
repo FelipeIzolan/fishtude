@@ -1,4 +1,7 @@
 /*#define DEBUG*/
+#ifdef DEBUG
+#include "lib/tdb.h"
+#endif
 
 #include <time.h>
 #include <stdio.h>
@@ -25,7 +28,7 @@
 #include "src/cloud.c"
 #include "src/player.c"
 #include "src/fishing.c"
-#include "src/passive.c"
+#include "src/passive/tree.c"
 
 enum { GAME, SKILL_TREE };
 
@@ -46,9 +49,63 @@ void cap(int start) {
   }
 }
 
+#ifdef DEBUG
+void debugDraw(PlayerStatus * status, TDB_BitMap * p1, TDB_BitMap * p2, TDB_BitMap * p3, TDB_BitMap * p4, TDB_BitMap * p5, TDB_BitMap * coin) {
+  TDB_Clear();
+  TDB_Size s = TDB_GetSize();
+
+  TDB_DrawLine("|", s.col / 2, 0, s.col / 2, s.row);
+    
+  TDB_DrawBitMap(p1, TDB_PIXEL, 4, 2, 2);
+  TDB_Write("fish_spawn_quantity", 30, 8);
+  TDB_WriteF(30, 9, "%hi", status->fish_spawn_quantity);
+
+  TDB_DrawBitMap(p2, TDB_PIXEL, 4, 14, 2);
+  TDB_Write("fish_spawn_time_decrease", 30, 20);
+  TDB_WriteF(30, 21, "%f", status->fish_spawn_time_decrease);
+
+  TDB_DrawBitMap(p3, TDB_PIXEL, 4, 26, 2);
+  TDB_Write("fish_gold_base", 30, 32);
+  TDB_WriteF(30, 33, "%hi", status->fish_gold_base);
+
+  TDB_DrawBitMap(p4, TDB_PIXEL, 4, 38, 2);
+  TDB_Write("fish_gold_multiplier", 30, 44);
+  TDB_WriteF(30, 45, "%f", status->fish_gold_multiplier);
+
+  TDB_DrawBitMap(p5, TDB_PIXEL, 4, 50, 2);
+  TDB_SetCursor(30, 56);
+  TDB_Write("gold_passive_income", 30, 56);
+  TDB_WriteF(30, 57, "%hi", status->gold_passive_income);
+
+  TDB_DrawBitMap(coin, TDB_PIXEL, (s.col / 2) + 4, 4, 2);
+  TDB_WriteF((s.col / 2) + 12, 7, "price(100): %i", (int)(100 * status->passive_price_multiplier));
+  TDB_WriteF((s.col / 2) + 12, 8, "price(200): %i", (int)(200 * status->passive_price_multiplier));
+}
+
+void debugDestroy(TDB_BitMap * p1, TDB_BitMap * p2, TDB_BitMap * p3, TDB_BitMap * p4, TDB_BitMap * p5, TDB_BitMap * coin) {
+  TDB_DestroyBitMap(p1);
+  TDB_DestroyBitMap(p2);
+  TDB_DestroyBitMap(p3);
+  TDB_DestroyBitMap(p4);
+  TDB_DestroyBitMap(p5);
+  TDB_DestroyBitMap(coin);
+}
+#endif
+
 int main() {
-  // -- SDL ------------------------------------------------------------------
+  #ifdef DEBUG
+  TDB_Setup(0);
+
+  TDB_BitMap p1 = TDB_LoadBitMap("./assets/passives/1.bmp");
+  TDB_BitMap p2 = TDB_LoadBitMap("./assets/passives/2.bmp");
+  TDB_BitMap p3 = TDB_LoadBitMap("./assets/passives/3.bmp");
+  TDB_BitMap p4 = TDB_LoadBitMap("./assets/passives/4.bmp");
+  TDB_BitMap p5 = TDB_LoadBitMap("./assets/passives/5.bmp");
+  TDB_BitMap co = TDB_LoadBitMap("./assets/coin.bmp");
+  #endif
+  
   srand(time(NULL));
+  // -- SDL ------------------------------------------------------------------
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) error();
 
   SDL_Window * window = SDL_CreateWindow(
@@ -95,7 +152,7 @@ int main() {
   
   Player player = { 
     PLAYER_DEFAULT, 
-    309,
+    0,
     createEntity(renderer, "./assets/player.bmp", 0, 24, 16, 16),
     { 0, 1, 1, 0, 0, 1 }
   };
@@ -144,12 +201,15 @@ int main() {
             if (event.key.keysym.sym == SDLK_LEFT)  updatePassiveTreeSelect(&passiveTree, 'L');
             if (event.key.keysym.sym == SDLK_RIGHT) updatePassiveTreeSelect(&passiveTree, 'R');
             if (event.key.keysym.sym == SDLK_x)     activePassiveTreeSelect(&passiveTree, &player);
+            #ifdef DEBUG
+            if (event.key.keysym.sym == SDLK_x)     debugDraw(&player.status, &p1, &p2, &p3, &p4, &p5, &co);
+            #endif
           }
 
         break;
       }
     }
- 
+
     SDL_RenderClear(renderer);   
 
     if (scene == GAME) {
@@ -174,7 +234,7 @@ int main() {
         for (int i = 0; i < 7 + rrandom(1, player.status.fish_spawn_quantity); i++)
           cvector_push_back(fish, createFish(fish_texture));
 
-        fish_spawn_time = 16 - player.status.fish_spawn_time_decrease;
+        fish_spawn_time = 12 - player.status.fish_spawn_time_decrease;
       }
       // ------
 
@@ -209,7 +269,7 @@ int main() {
     drawNumber(renderer, &number, player.gold, 7, 2);
     
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer); 
 
     cap(0);
   }
@@ -238,6 +298,11 @@ int main() {
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
+
+  #ifdef DEBUG
+  debugDestroy(&p1, &p2, &p3, &p4, &p5, &co);
+  #endif
+
   SDL_Quit();
 
   return 1;

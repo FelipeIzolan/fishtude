@@ -6,7 +6,6 @@
 #include <SDL_render.h>
 #include <SDL_rect.h>
 
-#include "SDL_timer.h"
 #include "math.c"
 
 typedef struct Animation {

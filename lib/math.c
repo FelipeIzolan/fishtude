@@ -15,6 +15,15 @@
 #define ICLAMP(v, min, max) (v > max ? min : v < min ? max : v)
 #define MID(s, e) ((s + e) / 2)
 
+#define R_45 M_PI / 4
+#define R_90 M_PI / 2
+#define R_135 3 * M_PI / 4
+#define R_180 M_PI
+#define R_225 5 * M_PI / 4
+#define R_270 3 * M_PI / 2
+#define R_315 7 * M_PI / 4
+#define R_360 2 * M_PI
+
 SDL_Point quadraticBezierCurve(SDL_Point p1, SDL_Point p2, SDL_Point p3, float w) {
   float x0 = LERP(p1.x, p2.x, w);
   float y0 = LERP(p1.y, p2.y, w);
