@@ -5,17 +5,11 @@
 
 ## Fish 🐟
 
-<img src="./assets/fish.bmp" width=592 style="image-rendering: pixelated" />
+![image](https://github.com/FelipeIzolan/fishtude/assets/80170121/e6f6b2d0-139a-4cc3-a68b-6e7d8d996781)
 
 ## Passives 🔥
 
-| Passive                                                                           | Effect                     |
-|-----------------------------------------------------------------------------------|----------------------------|
-| <img src="./assets/passives/1.bmp" width=64 style="image-rendering: pixelated" /> | + fish spawn quatity       |
-| <img src="./assets/passives/2.bmp" width=64 style="image-rendering: pixelated" /> | + fish spawn time decrease |
-| <img src="./assets/passives/3.bmp" width=64 style="image-rendering: pixelated" /> | + fish gold base           |
-| <img src="./assets/passives/4.bmp" width=64 style="image-rendering: pixelated" /> | + fish gold multiplier     |
-| <img src="./assets/passives/5.bmp" width=64 style="image-rendering: pixelated" /> | + gold passive income      |
+![image](https://github.com/FelipeIzolan/fishtude/assets/80170121/02c3e85b-f775-4e72-bc6e-e5d0d9eab47f)
 
 ## Development 👨‍💻
 
