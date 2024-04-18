@@ -2,3 +2,5 @@ compile_commands.json
 .cache/
 fishtude
 *.png
+
+script/out.bmp

@@ -1,15 +1,25 @@
 #pragma once
 
-/*#include <math.h>*/
 #include <SDL_render.h>
 #include <SDL_surface.h>
 
-SDL_Texture * createTexture(SDL_Renderer * renderer, char * src) {
-  SDL_Surface * surface = SDL_LoadBMP(src);
-  SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
+// create-texture-by-file
+/*SDL_Texture * createTexture(SDL_Renderer * renderer, char * src) {*/
+/*  SDL_Surface * surface = SDL_LoadBMP(src);*/
+/*  SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);*/
 
-  SDL_FreeSurface(surface);
+/*  SDL_FreeSurface(surface);*/
 
+/*  return texture;*/
+/*}*/
+
+// create-texture-by-pixels-raw-data
+SDL_Texture * createTexture(SDL_Renderer * renderer, void * data, int w, int h) {
+  SDL_Texture * texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, w, h);
+  
+  SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+  SDL_UpdateTexture(texture, NULL, data, w * 4); // RGBA == 4 bytes
+                                                 
   return texture;
 }
 

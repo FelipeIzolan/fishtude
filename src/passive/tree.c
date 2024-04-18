@@ -85,7 +85,7 @@ void activePassiveTreeSelect(PassiveTree * passiveTree, Player * player) {
 /* |_) /\  (_  (_   | \  / |_ __ | |_) |_ |_ */
 /* |  /--\ __) __) _|_ \/  |_    | | \ |_ |_ */
 /*                                           */
-PassiveTree createPassiveTree(SDL_Renderer * renderer, SDL_Texture * texture) {
+void createPassiveTree(SDL_Renderer * renderer, PassiveTree * tree, SDL_Texture * texture) {
   Passive * p = malloc(sizeof(Passive));
 
   p->id = YELLOW;
@@ -135,13 +135,7 @@ PassiveTree createPassiveTree(SDL_Renderer * renderer, SDL_Texture * texture) {
   createPassive(texture, rc4y, SPURPLE, R_360, 0);
   createPassive(texture, rc4y, PURPLE, R_45, 0);
   // -----------------------------
-
-  PassiveTree passiveTree = {
-    root,
-    root,
-    { 0, 0, GAME_WIDTH, GAME_HEIGHT },
-    createSprite(renderer, "./assets/passive_pointer.bmp", 73, 65, 0, 0)
-  };
-
-  return passiveTree;
+  
+  tree->root = root;
+  tree->selected = root;
 }

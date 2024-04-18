@@ -11,20 +11,17 @@ typedef struct Sprite {
   SDL_Texture * texture;
 } Sprite;
 
-Sprite createSprite(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {
+Sprite createSprite(SDL_Renderer * renderer, void * data, int x, int y, int w, int h, int sw, int sh) {
   Sprite sprite;
-  int tw, th;
-
-  sprite.texture = createTexture(renderer, src);  
-  SDL_QueryTexture(sprite.texture, NULL, NULL, &tw, &th);
 
   sprite.position.x = x;
   sprite.position.y = y;
+  sprite.texture = createTexture(renderer, data, sw, sh);
 
-  if (w == 0) sprite.position.w = tw;
+  if (w == 0) sprite.position.w = sw;
   else sprite.position.w = w;
   
-  if (h == 0) sprite.position.h = th;
+  if (h == 0) sprite.position.h = sh;
   else sprite.position.h = h;
 
   sprite.frame = (SDL_Rect) { 
@@ -39,18 +36,18 @@ Sprite createSprite(SDL_Renderer * renderer, char * src, int x, int y, int w, in
 
 Sprite createSpriteTexture(SDL_Texture * texture, int x, int y, int w, int h) {
   Sprite sprite;
-  int tw, th;
+  int sw, sh;
 
   sprite.texture = texture;  
-  SDL_QueryTexture(sprite.texture, NULL, NULL, &tw, &th);
+  SDL_QueryTexture(sprite.texture, NULL, NULL, &sw, &sh);
 
   sprite.position.x = x;
   sprite.position.y = y;
 
-  if (w == 0) sprite.position.w = tw;
+  if (w == 0) sprite.position.w = sw;
   else sprite.position.w = w;
   
-  if (h == 0) sprite.position.h = th;
+  if (h == 0) sprite.position.h = sh;
   else sprite.position.h = h;
 
   sprite.frame = (SDL_Rect) { 
@@ -66,11 +63,6 @@ Sprite createSpriteTexture(SDL_Texture * texture, int x, int y, int w, int h) {
 void setSpriteFrame(Sprite * sprite, int column, int row) {
   sprite->frame.x = (column - 1) * sprite->frame.w;
   sprite->frame.y = (row - 1) * sprite->frame.h;
-}
-
-void setSpriteFramePosition(Sprite * sprite, int x, int y) {
-  sprite->frame.x = x;
-  sprite->frame.y = y;
 }
 
 void drawSprite(SDL_Renderer * renderer, Sprite * sprite) {

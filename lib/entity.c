@@ -14,12 +14,12 @@ typedef struct Entity {
   SDL_RendererFlip flip;
 } Entity;
 
-Entity createEntity(SDL_Renderer * renderer, char * src, int x, int y, int w, int h) {  
+Entity createEntity(SDL_Renderer * renderer, void * data, int x, int y, int w, int h, int sw, int sh) {  
   Entity entity;
 
   entity.flip = SDL_FLIP_NONE;
   entity.position = (SDL_Rect) { x, y, w, h };
-  entity.texture = createTexture(renderer, src);
+  entity.texture = createTexture(renderer, data, sw, sh);
   entity.animation = createAnimation(entity.texture, w, h);
 
   return entity;

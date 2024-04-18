@@ -18,9 +18,6 @@ typedef struct Animation {
 
 Animation createAnimation(SDL_Texture * texture, int fw, int fh) {
   Animation animation;
-  int tw, th;
-
-  SDL_QueryTexture(texture, NULL, NULL, &tw, &th);
 
   animation = (Animation) {
     (SDL_Rect) { 0, 0, fw, fh },
@@ -45,7 +42,7 @@ void setAnimation(Animation * animation, int fy, int fc, int fr) {
   animation->frame.y = (fy - 1) * animation->frame.h;
 }
 
-void setFrameAnimation(Animation * animation, int fx, int fy) {
+void setAnimationFrame(Animation * animation, int fx, int fy) {
   animation->fc = 0;
   animation->fy = fy - 1;
 

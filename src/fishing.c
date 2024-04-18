@@ -35,7 +35,7 @@ void setPreFishing(Fishing * fishing, Player * player) {
 }
 
 void setFishing(Fishing * fishing) {
-  fishing->force.current = floorf(((float)fishing->force.current / fishing->force.max) * 108) + 2; 
+  fishing->force.current = floor(((double)fishing->force.current / fishing->force.max) * 108) + 2; 
 }
 
 void updateFishing(Fishing * fishing, Player * player) {
@@ -58,9 +58,7 @@ void updateFishing(Fishing * fishing, Player * player) {
   }
 }
 
-void drawFishingLine(SDL_Renderer * renderer, Fishing * fishing, Player * player) {
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-  
+void drawFishingLine(SDL_Renderer * renderer, Fishing * fishing, Player * player) { 
   if (player->state == PLAYER_FISHING) {  
     SDL_Point midpoint = lineMidpoint(fishing->start, fishing->end);
     SDL_Point p1 = lineMidpoint(fishing->start, midpoint);
