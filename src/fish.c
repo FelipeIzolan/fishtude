@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 #include "../lib/cvector.h"
 #include "../lib/entity.c"
 #include "../lib/math.c"
@@ -7,7 +9,6 @@
 
 #include "fishing.c"
 #include "player.c"
-#include <math.h>
 
 enum FishState {
   FISH_DEFAULT,

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../lib/sprite.c"
-#include "../../lib/tree.c"
+#include "../lib/sprite.c"
+#include "../lib/tree.c"
 
 enum PassiveId {
   YELLOW,

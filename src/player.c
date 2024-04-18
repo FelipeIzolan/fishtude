@@ -4,7 +4,7 @@
 
 #include "../lib/entity.c"
 #include "../lib/animation.c"
-#include "./passive/passive.c"
+#include "./passive.c"
 
 enum PlayerState { 
   PLAYER_DEFAULT,

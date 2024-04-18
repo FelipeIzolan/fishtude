@@ -26,9 +26,8 @@
 #include "src/cloud.c"
 #include "src/player.c"
 #include "src/fishing.c"
-#include "src/passive/tree.c"
-
-#include "script/texture.h"
+#include "src/tree.c"
+#include "src/texture.h"
 
 enum { GAME, SKILL_TREE };
 

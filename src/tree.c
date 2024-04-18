@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../lib/sprite.c"
-#include "../../lib/tree.c"
-#include "../player.c"
+#include "../lib/sprite.c"
+#include "../lib/tree.c"
+#include "./player.c"
 
 #include "passive.c"
 

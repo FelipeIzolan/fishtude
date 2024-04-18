@@ -73,6 +73,6 @@ for b in bitmap:
     raw = readBitmap(bitmap[b], b.upper() + "_PIXEL_ARRAY")
     source += "{};\n".format(raw)
 
-out = open("./texture.h", "w+")
+out = open("../src/texture.h", "w+")
 out.write(source)
 out.close()
