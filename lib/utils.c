@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL_timer.h>
 #include <SDL_render.h>
 #include <SDL_surface.h>
 
@@ -26,6 +27,25 @@ SDL_Texture * createTexture(SDL_Renderer * renderer, void * data, int w, int h) 
 void destroyTexture(SDL_Texture * texture) {
   SDL_DestroyTexture(texture);
   texture = NULL;
+}
+
+// --------------------
+
+void error() {
+  fprintf(stderr, "SDL_Init -> %s\n", SDL_GetError());
+  exit(EXIT_FAILURE);
+}
+
+void cap(int start) {
+  static uint64_t s;
+  
+  if (start) {
+    s = SDL_GetPerformanceCounter();
+  } else {
+    uint64_t e = SDL_GetPerformanceCounter();
+    float el = (e - s) / (float)SDL_GetPerformanceFrequency() * 1000;
+    SDL_Delay(33.33333 - el); // 30 FPS
+  }
 }
 
 // --------------------

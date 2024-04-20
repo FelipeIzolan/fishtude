@@ -4,7 +4,6 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include <SDL.h>
 #include <SDL_timer.h>
@@ -23,30 +22,12 @@
 #include "lib/cvector.h"
 
 #include "src/fish.c"
+#include "src/tree.c"
 #include "src/cloud.c"
+#include "src/scene.c"
 #include "src/player.c"
 #include "src/fishing.c"
-#include "src/tree.c"
 #include "src/texture.h"
-
-enum { GAME, SKILL_TREE };
-
-void error() {
-  fprintf(stderr, "SDL_Init -> %s\n", SDL_GetError());
-  exit(EXIT_FAILURE);
-}
-
-void cap(int start) {
-  static uint64_t s;
-  
-  if (start) {
-    s = SDL_GetPerformanceCounter();
-  } else {
-    uint64_t e = SDL_GetPerformanceCounter();
-    float el = (e - s) / (float)SDL_GetPerformanceFrequency() * 1000;
-    SDL_Delay(33.33333 - el); // 30 FPS
-  }
-}
 
 int main() {
   #ifdef DEBUG
@@ -80,9 +61,8 @@ int main() {
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
   // -------------------------------------------------------------------------
 
-  int scene = GAME;
   
-  SDL_Texture * fish_texture = createTexture(renderer, (void *) &FISH_PIXEL_ARRAY, 128, 32);
+  SDL_Texture * fish_texture = createTexture(renderer, (void *) &FISH_PIXEL_ARRAY, 128, 40);
   SDL_Texture * cloud_texture = createTexture(renderer, (void *) &CLOUD_PIXEL_ARRAY, 128, 32);
   SDL_Texture * passive_texture = createTexture(renderer, (void *) &PASSIVE_PIXEL_ARRAY, 70, 28);
 
@@ -97,6 +77,8 @@ int main() {
   Sprite cloud[8];
   createCloud(cloud, cloud_texture);
 
+  Scene scene = { GAME };
+  
   PassiveTree tree = {
     NULL,
     NULL,
@@ -137,9 +119,9 @@ int main() {
         case SDL_QUIT: goto game_free;
         case SDL_KEYDOWN:
           if (event.key.keysym.sym == SDLK_ESCAPE) goto game_free; 
-          if (event.key.keysym.sym == SDLK_z) scene = scene == GAME ? SKILL_TREE : GAME;
+          if (event.key.keysym.sym == SDLK_z) scene.current = scene.current == GAME ? SKILL_TREE : GAME;
            
-          if (scene == GAME) {
+          if (scene.current == GAME) {
             if (event.key.keysym.sym == SDLK_x && player.state != PLAYER_BACK) {
               player.state = player.state == PLAYER_DEFAULT ? PLAYER_MECHANIC : 
                              player.state == PLAYER_MECHANIC ? PLAYER_FISHING : 
@@ -150,7 +132,7 @@ int main() {
             }
           }
 
-          if (scene == SKILL_TREE) {
+          if (scene.current == SKILL_TREE) {
             if (event.key.keysym.sym == SDLK_UP)    updatePassiveTreeSelect(&tree, 'U');
             if (event.key.keysym.sym == SDLK_DOWN)  updatePassiveTreeSelect(&tree, 'D');
             if (event.key.keysym.sym == SDLK_LEFT)  updatePassiveTreeSelect(&tree, 'L');
@@ -167,7 +149,7 @@ int main() {
 
     SDL_RenderClear(renderer);   
 
-    if (scene == GAME) {
+    if (scene.current == GAME) {
       // ------ Update
       fish_spawn_time -= 0.03333;
       gold_income_time -= 0.03333;
@@ -210,7 +192,7 @@ int main() {
       // ------
     }
 
-    if (scene == SKILL_TREE) {
+    if (scene.current == SKILL_TREE) {
       SDL_SetRenderDrawColor(renderer, 69, 40, 60, 255);
       SDL_RenderFillRect(renderer, &background.position);
       SDL_SetRenderDrawColor(renderer, 255,255,255,255);

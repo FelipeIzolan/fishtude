@@ -182,7 +182,7 @@ out = [
 for i in range(16):
     fish = FISH.copy()
     rgb = random.choice(PALLETE)
-    pattern = "half"
+    pattern = random.choice(PATTERN)
 
     _fish_base(fish, rgb)
 
