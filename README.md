@@ -4,8 +4,8 @@
 <img src='https://github.com/FelipeIzolan/fishtude/assets/80170121/1e1309a3-a293-479c-9c26-626c329709ab' width=360 />
 
 ## Fish 🐟
+![fish](https://github.com/FelipeIzolan/fishtude/assets/80170121/f5f012b1-ae1f-4b20-a326-3d128a534427)
 
-![image](https://github.com/FelipeIzolan/fishtude/assets/80170121/e6f6b2d0-139a-4cc3-a68b-6e7d8d996781)
 
 ## Passives 🔥
 
