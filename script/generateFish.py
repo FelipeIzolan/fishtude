@@ -72,23 +72,77 @@ BOTTOM = [
     (5,1),(5,3),(5,4),(5,5),(5,6)
 ]
 
-NEMO = [
-    (3,3),(4,3),(5,3),
-    (3,5),(4,5),(5,5)
-]
-
-HALF = [
-    (3,1),(3,3),(3,4),
-    (4,2),(4,3),(4,4),
-    (5,1),(5,3),(5,4),
-]
-
-PATTERN = [
-    "flower",
-    "nemo",
-    "tint",
-    "half"
-]
+PATTERN = {
+    'point': [],
+    'flower': [],
+    'half': [
+        (3,1),(3,3),(3,4),
+        (4,2),(4,3),(4,4),
+        (5,1),(5,3),(5,4)
+    ],
+    'diagonal1': [
+        (3,3),
+             (4,4),
+                 (5,5)
+    ],
+    'diagonal2': [
+                  (3,5),
+             (4,4),
+        (5,3)
+    ],
+    'point4': [
+        (3,3),(3,5),
+        (5,3),(5,5)
+    ],
+    'nemo1': [
+        (3,3),(3,5),
+        (4,3),(4,5),
+        (5,3),(5,5)
+    ],
+    'nemo2': [
+        (3,4),
+        (4,4),
+        (5,4)
+    ],
+    'tiger1': [
+        (3,3),(3,5),
+        (4,3),(4,5)
+    ],
+    'tiger2': [
+             (3,3),(3,5),
+        (4,2),(4,4)
+    ],
+    'bandersnatch': [
+              (3,4),
+        (4,3),(4,4),(4,5),
+        (5,3),      (5,5)
+    ],
+    'z': [
+              (3,4),(3,5),
+              (4,4),
+        (5,3),(5,4)
+    ],
+    'x': [
+        (3,3),    (3,5),
+             (4,4),
+        (5,3),    (5,5)
+    ],
+    'o': [
+        (3,1),(3,3),(3,4),
+        (4,2),      (4,4),
+        (5,1),(5,3),(5,4)
+    ],
+    '<': [
+             (3,4),
+        (4,3),
+             (5,4)
+    ],
+    '>': [
+        (3,4),
+             (4,5),
+        (5,4)
+    ]
+}
 
 # --------------------------------------------------------------------- #
 
@@ -97,9 +151,7 @@ def rgb2hsv(rgb):
 
 def hsv2rgb(hsv):
     t = colorsys.hsv_to_rgb(hsv[0], hsv[1], hsv[2])
-    return (round(t[0] * 255), round(t[1] * 255), round(t[2] * 255))
-
-# --------------------------------------------------------------------- #
+    return (t[0] * 255.0, t[1] * 255.0, t[2] * 255.0)
 
 def _rgb_r_brightness(rgb, v):
     hsv = list(rgb2hsv(rgb))
@@ -114,57 +166,52 @@ def _rgb_m_sv(rgb):
 
     return hsv2rgb(hsv)
 
+def _color(mix = False):
+    color = _rgb_m_sv(random.choice(PALLETE)) if mix else random.choice(PALLETE)
+    return (color, _rgb_r_brightness(color, random.randrange(4,16)) if random.random() < 0.7 else color)
+
 # --------------------------------------------------------------------- #
 
-def _fish_base(fish, rgb):
-    color = rgb if random.random() > 0.3 else _rgb_m_sv(rgb)
-    shadow = _rgb_r_brightness(rgb, random.randrange(2, 16))
-    
-    fill_chance = random.random()
+def _fish_base():
+    fish = FISH.copy()
+    color, shadow =  _color()
 
     for (y, x) in TOP:
         fish[y][x] = color
 
-    for (y, x) in BOTTOM:
-        fish[y][x] = shadow if fill_chance > 0.1 else color
+    if random.random() < 0.9:
+        for (y, x) in BOTTOM:
+            fish[y][x] = shadow
 
-def _fish_tint(fish, min=1, max=5, is_nemo=False):
-    c = fish[3][4]
-    for _ in range(random.randrange(min, max)):
-        p = random.choice(AREA)
-        
-        if is_nemo:
-            while p in NEMO:
-                p = random.choice(AREA)
-        
-        fish[p[0]][p[1]] = _rgb_m_sv(c) 
+    return fish
 
-def _fish_nemo(fish):
-    for (y, x) in NEMO:
-        fish[y][x] = NW if y != 5 else NWS
+def _fish_pattern(fish):
+    color, shadow = _color(True)
+    key, value = random.choice(list(PATTERN.items()))
 
-    _fish_tint(fish, 0, 4, True)
+    if key.startswith('nemo') and random.random() < 0.75:
+        color = (255,255,255)
+        shadow = (203,219,252)
 
-def _fish_flower(fish):
-    for _ in range(random.randrange(1,3)):
+    if key == 'point':
         (y,x) = random.choice(AREA)
-        c = random.choice(PALLETE)
-        cm = _rgb_m_sv(c)
+        fish[y][x] = _rgb_m_sv(random.choice(PALLETE))
 
-        fish[y][x] = c
-        fish[y+1][x] = cm if (y+1,x) in AREA else fish[y+1][x]
-        fish[y-1][x] = cm if (y-1,x) in AREA else fish[y-1][x]
-        fish[y][x+1] = cm if (y,x+1) in AREA else fish[y][x+1]
-        fish[y][x-1] = cm if (y,x-1) in AREA else fish[y][x-1]
+    if key == 'flower':
+        (y,x) = random.choice(AREA)
+        center = random.choice(PALLETE)
+        sides = _rgb_m_sv(center)
 
-def _fish_half(fish):
-    c = _rgb_m_sv(fish[3][4])
-    cs = _rgb_r_brightness(c, random.randrange(4,12))
+        fish[y][x] = center
+        fish[y+1][x] = sides if (y+1,x) in AREA else fish[y+1][x]
+        fish[y-1][x] = sides if (y-1,x) in AREA else fish[y-1][x]
+        fish[y][x+1] = sides if (y,x+1) in AREA else fish[y][x+1]
+        fish[y][x-1] = sides if (y,x-1) in AREA else fish[y][x-1]
 
-    for i in range(len(HALF)):
-        (y, x) = HALF[i]
-        fish[y][x] = c if i % 2 == 0 else cs
+    for (y, x) in value:
+        fish[y][x] = shadow if ((y,x) in BOTTOM) else color
 
+    return _fish_pattern(fish) if random.random() < 0.25 else fish
 
 # --------------------------------------------------------------------- #
 
@@ -180,21 +227,11 @@ out = [
 ]
 
 for i in range(16):
-    fish = FISH.copy()
-    rgb = random.choice(PALLETE)
-    pattern = random.choice(PATTERN)
-
-    _fish_base(fish, rgb)
-
-    match pattern:
-        case "flower": _fish_flower(fish)
-        case "nemo": _fish_nemo(fish)
-        case "tint": _fish_tint(fish)
-        case "half": _fish_half(fish)
+    fish = _fish_base()
+    fish = _fish_pattern(fish)
 
     for j in range(8):
         out[j] += fish[j]
-
 
 out = Image.fromarray(np.array(out, dtype=np.uint8))
 out.save("./out.bmp")

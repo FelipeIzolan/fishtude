@@ -62,7 +62,7 @@ int main() {
   // -------------------------------------------------------------------------
 
   
-  SDL_Texture * fish_texture = createTexture(renderer, (void *) &FISH_PIXEL_ARRAY, 128, 40);
+  SDL_Texture * fish_texture = createTexture(renderer, (void *) &FISH_PIXEL_ARRAY, 128, 48);
   SDL_Texture * cloud_texture = createTexture(renderer, (void *) &CLOUD_PIXEL_ARRAY, 128, 32);
   SDL_Texture * passive_texture = createTexture(renderer, (void *) &PASSIVE_PIXEL_ARRAY, 70, 28);
 
